@@ -49,4 +49,30 @@ public class GameManager : MonoBehaviour
     void Update()
     {
     }
+
+    public bool IsTouched(Touch touch, BoxCollider collider)
+    {
+        Ray _ray = Camera.main.ScreenPointToRay(new Vector3(touch.position.x, touch.position.y, 0));
+        RaycastHit _hit;
+
+        return collider.Raycast(_ray, out _hit, 1000.0f);
+    }
+
+    public int IsTouchingPlayerSlot(Touch touch)
+    {
+        BoxCollider _coll;
+        GameObject slot;
+        int slotid = -1;
+        for(int i = 0; i < playerslots.Length; i++)
+        {
+            slot = playerslots[i];
+            _coll = slot.GetComponent<BoxCollider>();
+            if(IsTouched(touch, _coll))
+            {
+                slotid = i;
+                break;
+            }
+        }
+        return slotid;
+    }
 }

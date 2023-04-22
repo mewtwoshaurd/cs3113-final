@@ -9,10 +9,23 @@ public class CardObject : MonoBehaviour
     Camera cam;
     public LayerMask targetLayer;
 
-    public float maxSpeed = 10;
+    BoxCollider _coll;
+    //public float speed = 1;
+    //public float maxSpeed = 10;
+    public float cardOffset = -0.1f;
+
+    GameManager _gm;
+
+    bool isSelected = false;
+
+    bool isPlayed = false;
+
+    int slotid = -1;
     void Start()
     {
         _rigidbody = GetComponent<Rigidbody>();
+        _coll = GetComponent<BoxCollider>();
+        _gm = (GameManager)FindObjectOfType<GameManager>();
     }
 
     // Update is called once per frame
@@ -22,11 +35,27 @@ public class CardObject : MonoBehaviour
         {
             Debug.Log("Touch Input");
             Touch touch = Input.GetTouch(0);
-            if((Physics2D.OverlapPoint(cam.ScreenToWorldPoint(Input.mousePosition),targetLayer)) && (touch.phase == TouchPhase.Moved)){
-              
-                _rigidbody.AddForce(touch.deltaPosition);
-                _rigidbody.velocity = Vector3.ClampMagnitude(_rigidbody.velocity, maxSpeed);
+            slotid = _gm.IsTouchingPlayerSlot(touch);
+            if (touch.phase == TouchPhase.Began && (_gm.IsTouched(touch, _coll) && !isPlayed))
+            {
+                Debug.Log("selected!");
+                isSelected = true;
+            }
+            else if (touch.phase == TouchPhase.Began && isSelected && (slotid >= 0) &&!isPlayed)
+            {
+                Debug.Log("play!");
+                Transform slotTrans = _gm.playerslots[slotid].transform;
+                Vector3 newPos = new Vector3(slotTrans.position.x, slotTrans.position.y, slotTrans.position.z + cardOffset);
+                transform.position = newPos;
+                isSelected = false;
+                isPlayed = true;
+            }
+            else if (touch.phase == TouchPhase.Began && !(_gm.IsTouched(touch, _coll)) &&!isPlayed)
+            {
+                Debug.Log("unselected!");
+                isSelected = false;
             }
         }
+
     }
 }
