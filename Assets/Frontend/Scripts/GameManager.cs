@@ -8,6 +8,10 @@ public class GameManager : MonoBehaviour
 
     List<Card> enemies = new List<Card>();
 
+    public GameObject[] playerslots;
+
+    public GameObject[] enemyslots;
+
     List<Card> hand = new List<Card>();
     List<GameEvent> events = new List<GameEvent>();
     // Start is called before the first frame update
@@ -28,9 +32,9 @@ public class GameManager : MonoBehaviour
             if (e.eventType == EventType.HandGiven)
             {
                 hand = (List<Card>)e.data[0];
-                Debug.Log(hand);
             }
         }
+
     }
 
     // Update is called once per frame
