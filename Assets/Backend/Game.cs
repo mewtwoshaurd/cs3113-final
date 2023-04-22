@@ -323,7 +323,8 @@ public enum UnitType
     Bee,
     Bat,
     Hedgehog,
-    Crocodile
+    Crocodile,
+    BaseGame
 }
 
 public enum ItemType
