@@ -10,7 +10,11 @@ public class GameManager : MonoBehaviour
 
     public GameObject[] playerslots;
 
+    public TMPro.TextMeshProUGUI PhaseButton;
+
     public GameObject[] enemyslots;
+
+    public int phaseNum;
 
     List<Card> hand = new List<Card>();
     List<GameEvent> events = new List<GameEvent>();
@@ -35,11 +39,14 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        if(phaseNum==0){
+            PhaseButton.text = "Next";
+        }
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
     }
 }
