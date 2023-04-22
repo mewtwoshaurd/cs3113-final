@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Card : MonoBehaviour
+public class CardObject : MonoBehaviour
 {
     // Start is called before the first frame update
     Rigidbody2D _rigidbody;
