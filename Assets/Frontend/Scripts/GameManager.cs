@@ -10,9 +10,13 @@ public class GameManager : MonoBehaviour
 
     public GameObject[] playerslots;
 
+    public GameObject[] handslots;
+
     public TMPro.TextMeshProUGUI PhaseButton;
 
     public GameObject[] enemyslots;
+
+    public GameObject cardPrefab;
 
     public int phaseNum;
 
@@ -36,12 +40,18 @@ public class GameManager : MonoBehaviour
             if (e.eventType == EventType.HandGiven)
             {
                 hand = (List<Card>)e.data[0];
+                Debug.Log(hand);
             }
         }
+
+        GenerateHand(hand);
 
         if(phaseNum==0){
             PhaseButton.text = "Next";
         }
+
+
+        Game.EndPhase();
 
     }
 
@@ -74,5 +84,24 @@ public class GameManager : MonoBehaviour
             }
         }
         return slotid;
+    }
+
+    /*public void UpdateGameSlot(int slotid)
+    {
+
+        events = Game.PlayUnit();
+        Debug.Log(events[0]);
+    }*/
+
+    void GenerateHand(List<Card> hand)
+    {
+        int handslotid = 0;
+        GameObject currentCard;
+        foreach (Card c in hand)
+        {
+            currentCard = Instantiate(cardPrefab, handslots[handslotid].transform.position, Quaternion.identity);
+            //currentCard.SetUnitId(c.id);
+            handslotid += 1;
+        }
     }
 }

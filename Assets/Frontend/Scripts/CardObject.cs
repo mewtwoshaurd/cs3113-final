@@ -16,6 +16,8 @@ public class CardObject : MonoBehaviour
 
     GameManager _gm;
 
+    int unitId;
+
     bool isSelected = false;
 
     bool isPlayed = false;
@@ -49,6 +51,7 @@ public class CardObject : MonoBehaviour
                 transform.position = newPos;
                 isSelected = false;
                 isPlayed = true;
+                //_gm.UpdateGameSlot(slotid);
             }
             else if (touch.phase == TouchPhase.Began && !(_gm.IsTouched(touch, _coll)) &&!isPlayed)
             {
@@ -57,5 +60,15 @@ public class CardObject : MonoBehaviour
             }
         }
 
+    }
+
+    public void SetUnitId(int id)
+    {
+        unitId = id;
+    }
+
+    public int GetUnitId()
+    {
+        return unitId;
     }
 }
