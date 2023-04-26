@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class GameManager : MonoBehaviour
     public GameObject[] handslots;
 
     public TMPro.TextMeshProUGUI PhaseButton;
+    public TMPro.TextMeshProUGUI PhaseText;
 
     public GameObject[] enemyslots;
 
@@ -20,11 +22,16 @@ public class GameManager : MonoBehaviour
 
     public int phaseNum;
 
+    public Button PhaseButtonUI;
+
+    private bool PhaseChanged = false;
+    
+
     List<Card> hand = new List<Card>();
     List<GameEvent> events = new List<GameEvent>();
     // Start is called before the first frame update
     void Start()
-    {
+    {	   
         for(int i = 0; i < 20; i++)
         {
             deck.Add(Card.UnitCard(UnitType.BaseGame));
@@ -46,11 +53,9 @@ public class GameManager : MonoBehaviour
 
         GenerateHand(hand);
 
-        if(phaseNum==0){
-            PhaseButton.text = "Next";
-        }
+        
 
-
+        
         Game.EndPhase();
 
     }
@@ -58,12 +63,50 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Button btn = PhaseButtonUI.GetComponent<Button>();
+        btn.onClick.AddListener(IncrementPhase);
+        
+        if(phaseNum==0 && !PhaseChanged){
+            PhaseButton.text = "NEXT";
+            StartCoroutine(PhaseTextChange("CARD PHASE",2.5f));
+            print("phase text change complete");
+            PhaseChanged=true;
+        }
+        if(phaseNum==1 && !PhaseChanged){
+            PhaseButton.text = "END";
+            StartCoroutine(PhaseTextChange("ATTACK PHASE",2.5f));
+            PhaseChanged=true;
+        }
+        if(phaseNum==2 && !PhaseChanged){
+            PhaseButton.text = "NEXT";
+            StartCoroutine(PhaseTextChange("ENEMY CARD PHASE",2.5f));
+            PhaseChanged=true;
+        }
+        if(phaseNum==3 && !PhaseChanged){
+            PhaseButton.text = "NEXT";
+            StartCoroutine(PhaseTextChange("ENEMY ATTACK PHASE",2.5f));
+            StartCoroutine(WaitXSeconds(1));
+            PhaseChanged=true;
+
+        }
     }
+
+    void IncrementPhase(){
+		if(phaseNum<3){
+            phaseNum++;
+        }
+        else{
+            phaseNum=0;
+        }
+        PhaseChanged = false;
+	}
 
     public bool IsTouched(Touch touch, BoxCollider collider)
     {
         Ray _ray = Camera.main.ScreenPointToRay(new Vector3(touch.position.x, touch.position.y, 0));
+        Debug.Log(_ray);
         RaycastHit _hit;
+        print(_hit);
 
         return collider.Raycast(_ray, out _hit, 1000.0f);
     }
@@ -104,4 +147,16 @@ public class GameManager : MonoBehaviour
             handslotid += 1;
         }
     }
+    
+    IEnumerator PhaseTextChange(string PhaseName, float seconds)
+    {
+        PhaseText.text = PhaseName;
+        yield return new WaitForSeconds(seconds);
+        PhaseText.text = "";
+    }
+    IEnumerator WaitXSeconds(float x){
+        yield return new WaitForSeconds(x);
+    }
+
+
 }
