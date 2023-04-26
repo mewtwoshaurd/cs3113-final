@@ -175,17 +175,22 @@ public static partial class Game
         }
         else if (phase == Phase.PlayerUnits)
         {
+            // change phase
             phase = Phase.EnemyUnits;
             events.Add(new GameEvent { eventType = EventType.PhaseEnded, data = new List<object> { phase } });
         }
         else if (phase == Phase.EnemyUnits)
         {
+            // change phase
             phase = Phase.PlayerCards;
             events.Add(new GameEvent { eventType = EventType.PhaseEnded, data = new List<object> { phase } });
+            // new turn
             turn++;
             events.Add(new GameEvent { eventType = EventType.TurnEnded, data = new List<object> { turn } });
+            // give hand to player
             deck = deck.OrderBy(x => Guid.NewGuid()).ToList();
-            hand = deck.Take(5).ToList();
+            int cardsToDraw = Math.Min(5, deck.Count);
+            hand = deck.Take(cardsToDraw).ToList();
             events.Add(new GameEvent { eventType = EventType.HandGiven, data = new List<object> { hand } });
         }
 
