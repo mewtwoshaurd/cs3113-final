@@ -27,10 +27,7 @@ public enum EventType
     UnitAttacked,                   // data: [attackerId, defenderId]
     UnitStatChanged,                // data: [unitId, healthChange, damageChange]
     UnitAbilityActivation,          // TBD
-    UnitItemActivation,             // TBD
-    UnitStatusInflicted,            // TBD
-    UnitStatusUpdated,              // TBD
-    UnitStatusRemoved,              // TBD
+    UnitItemActivation,             // data: [attackerId, itemId]
     UnitDied,                       // data: [unitId]
     EncounterEnded,                 // data: [boolPlayerWon]
     Error,                          // data: [errorMessage]

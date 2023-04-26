@@ -206,10 +206,60 @@ public static partial class Game
             events.Add(new GameEvent { eventType = EventType.Error, data = new List<object> { "Card '" + defender.ToString() + "' not a unit" } });
             return events;
         }
+        if (attacker.attacksRemaining <= 0)
+        {
+            events.Add(new GameEvent { eventType = EventType.Error, data = new List<object> { "Unit '" + attacker.ToString() + "' has no attacks remaining" } });
+            return events;
+        }
 
+        // If after all of this there have been no errors, the attack will be registered
         events.Add(new GameEvent { eventType = EventType.UnitAttacked, data = new List<object> { attackerId, defenderId } });
-        defender.health -= attacker.damage;
+        attacker.attacksRemaining--;
+        // If the attacker is holdinmg coffee, then they get an extra attack
+        if (attacker.heldItem != null && attacker.heldItem.itemType == ItemType.Coffee)
+        {
+            events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { attackerId, attacker.heldItem.id } });
+            attacker.attacksRemaining++;
+            attacker.heldItem = null;
+        }
+
+        // Damage calculations
+        int damageDone = attacker.damage;
+        // If the attacker has a sword, then they do +2 damage
+        if (attacker.heldItem != null && attacker.heldItem.itemType == ItemType.Sword)
+        {
+            events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { attackerId, attacker.heldItem.id } });
+            damageDone += 2;
+            attacker.heldItem = null;
+        }
+        // If the defender is holding a smoke bomb, they negate all damage
+        if (defender.heldItem != null && defender.heldItem.itemType == ItemType.SmokeBomb)
+        {
+            events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { defenderId, defender.heldItem.id } });
+            damageDone = 0;
+            defender.heldItem = null;
+        }
+        defender.health -= damageDone;
         events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defenderId, -attacker.damage, 0 } });
+        // If the defender took a non-zero amount of damage and has more than 0 health remaining and is holding a water, then they recieve +3 health
+        if (damageDone > 0 && defender.health > 0 && defender.heldItem != null && defender.heldItem.itemType == ItemType.Water)
+        {
+            events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { defenderId, defender.heldItem.id } });
+            defender.health += 3;
+            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defenderId, 3, 0 } });
+            defender.heldItem = null;
+        }
+
+        // Calculate deaths
+        // If health is <= 0 and the unit is holding a pentagram, set unit health to 1 and do not die
+        if (defender.health <= 0 && defender.heldItem != null && defender.heldItem.itemType == ItemType.Pentagram)
+        {
+            events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { defenderId, defender.heldItem.id } });
+            defender.health = 1;
+            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defenderId, 1, 0 } });
+            defender.heldItem = null;
+        }
+
         if (defender.health <= 0)
         {
             if (phase == Phase.PlayerUnits)
@@ -255,6 +305,7 @@ public class Card : ICloneable
     public int damage;
     public Card heldItem;
     public int heldItemTurn = -1;
+    public int attacksRemaining = 1;
 
     public Card(int given_id = -1)
     {
@@ -330,7 +381,9 @@ public enum UnitType
 public enum ItemType
 {
     NotApplicable,
-    Shield,
-    Water,
-    Hat
+    Water,      // Cure 3 hp if damaged and not dead
+    SmokeBomb,  // Avoid all damage from attack
+    Pentagram,  // If killed, revive with 1 hp
+    Sword,      // +2 damage for the attack
+    Coffee      // Gain an extra attack after attacking
 }
