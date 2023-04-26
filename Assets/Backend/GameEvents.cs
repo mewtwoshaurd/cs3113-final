@@ -26,7 +26,7 @@ public enum EventType
     TurnEnded,                      // data: [turn]
     UnitAttacked,                   // data: [attackerId, defenderId]
     UnitStatChanged,                // data: [unitId, healthChange, damageChange]
-    UnitAbilityActivation,          // TBD
+    UnitAbilityActivation,          // data: [unitId]
     UnitItemActivation,             // data: [attackerId, itemId]
     UnitDied,                       // data: [unitId]
     EncounterEnded,                 // data: [boolPlayerWon]

@@ -149,14 +149,29 @@ public static partial class Game
 
         if (phase == Phase.PlayerCards)
         {
+            // change phase
             phase = Phase.PlayerUnits;
             events.Add(new GameEvent { eventType = EventType.PhaseEnded, data = new List<object> { phase } });
+            // move hand back to deck
             foreach (Card card in hand)
             {
                 deck.Add(card);
             }
             hand.Clear();
             events.Add(new GameEvent { eventType = EventType.HandTaken, data = new List<object> { } });
+            // units regenerate attacks
+            foreach (Card card in playerUnits)
+            {
+                // swarm units get 3 attacks
+                if (card.abilityType == AbilityType.Swarm)
+                {
+                    card.attacksRemaining += 3;
+                }
+                else
+                {
+                    card.attacksRemaining += 1;
+                }
+            }
         }
         else if (phase == Phase.PlayerUnits)
         {
@@ -195,7 +210,6 @@ public static partial class Game
             events.Add(new GameEvent { eventType = EventType.Error, data = new List<object> { "Card '" + defenderId.ToString() + "' not found in " + defenderString + " units" } });
             return events;
         }
-
         if (attacker.cardType != CardType.Unit)
         {
             events.Add(new GameEvent { eventType = EventType.Error, data = new List<object> { "Card '" + attacker.ToString() + "' not a unit" } });
@@ -213,65 +227,149 @@ public static partial class Game
         }
 
         // If after all of this there have been no errors, the attack will be registered
-        events.Add(new GameEvent { eventType = EventType.UnitAttacked, data = new List<object> { attackerId, defenderId } });
+        HandleAttack(events, attacker, defender);
+
+        // If the defender has the intimidate ability, lower attackers atk by 2 (min 1)
+        if (defender.abilityType == AbilityType.Intimidate)
+        {
+            events.Add(new GameEvent { eventType = EventType.UnitAbilityActivation, data = new List<object> { defender.id } });
+            int oldDamage = attacker.damage;
+            attacker.damage = Math.Max(1, attacker.damage - 2);
+            int damageChange = attacker.damage - oldDamage;
+            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { attacker.id, 0, damageChange } });
+        }
+
+        // If the defender has the wild ability, swap attack and defense stats as long as its hp isnt already 0
+        if (defender.abilityType == AbilityType.Wild && defender.health > 0)
+        {
+            events.Add(new GameEvent { eventType = EventType.UnitAbilityActivation, data = new List<object> { defender.id } });
+            int oldDamage = defender.damage;
+            defender.damage = defender.health;
+            defender.health = oldDamage;
+
+            int damageChange = defender.damage - defender.health;
+            int healthChange = defender.health - defender.damage;
+            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defender.id, healthChange, damageChange } });
+        }
+
+        // If the defender has the bloodsucker ability, heal the defender by 1hp as long as its hp isnt already 0
+        if (defender.abilityType == AbilityType.Bloodsucker && defender.health > 0)
+        {
+            events.Add(new GameEvent { eventType = EventType.UnitAbilityActivation, data = new List<object> { defender.id } });
+            defender.health++;
+            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defender.id, 1, 0 } });
+        }
+
+        // If the defender has the spikey ability, deal 1 damage to the attacker
+        if (defender.abilityType == AbilityType.Spikey && attacker.health > 0)
+        {
+            events.Add(new GameEvent { eventType = EventType.UnitAbilityActivation, data = new List<object> { defender.id } });
+            attacker.health--;
+            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { attacker.id, -1, 0 } });
+            if (attacker.health <= 0)
+            {
+                HandleDeath(events, attacker);
+            }
+        }
+
+        // If the attacker has the lazy ability, decrease its attacks remaining by 1
+        if (attacker.abilityType == AbilityType.Lazy && attacker.health > 0)
+        {
+            events.Add(new GameEvent { eventType = EventType.UnitAbilityActivation, data = new List<object> { attacker.id } });
+            attacker.attacksRemaining--;
+            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { attacker.id, 0, -1 } });
+        }
+
+        return events;
+    }
+
+    private static void HandleAttack(List<GameEvent> events, Card attacker, Card defender)
+    {
+        events.Add(new GameEvent { eventType = EventType.UnitAttacked, data = new List<object> { attacker.id, defender.id } });
         attacker.attacksRemaining--;
-        // If the attacker is holdinmg coffee, then they get an extra attack
+        // If the attacker is holding coffee, then they get an extra attack
         if (attacker.heldItem != null && attacker.heldItem.itemType == ItemType.Coffee)
         {
-            events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { attackerId, attacker.heldItem.id } });
+            events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { attacker.id, attacker.heldItem.id } });
             attacker.attacksRemaining++;
             attacker.heldItem = null;
         }
 
-        // Damage calculations
+        HandleDamage(events, attacker, defender);
+    }
+
+    private static void HandleDamage(List<GameEvent> events, Card attacker, Card defender)
+    {
         int damageDone = attacker.damage;
         // If the attacker has a sword, then they do +2 damage
         if (attacker.heldItem != null && attacker.heldItem.itemType == ItemType.Sword)
         {
-            events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { attackerId, attacker.heldItem.id } });
+            events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { attacker.id, attacker.heldItem.id } });
             damageDone += 2;
             attacker.heldItem = null;
         }
         // If the defender is holding a smoke bomb, they negate all damage
         if (defender.heldItem != null && defender.heldItem.itemType == ItemType.SmokeBomb)
         {
-            events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { defenderId, defender.heldItem.id } });
+            events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { defender.id, defender.heldItem.id } });
             damageDone = 0;
             defender.heldItem = null;
         }
         defender.health -= damageDone;
-        events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defenderId, -attacker.damage, 0 } });
+        events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defender.id, -attacker.damage, 0 } });
         // If the defender took a non-zero amount of damage and has more than 0 health remaining and is holding a water, then they recieve +3 health
         if (damageDone > 0 && defender.health > 0 && defender.heldItem != null && defender.heldItem.itemType == ItemType.Water)
         {
-            events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { defenderId, defender.heldItem.id } });
+            events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { defender.id, defender.heldItem.id } });
             defender.health += 3;
-            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defenderId, 3, 0 } });
+            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defender.id, 3, 0 } });
             defender.heldItem = null;
         }
 
-        // Calculate deaths
-        // If health is <= 0 and the unit is holding a pentagram, set unit health to 1 and do not die
-        if (defender.health <= 0 && defender.heldItem != null && defender.heldItem.itemType == ItemType.Pentagram)
-        {
-            events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { defenderId, defender.heldItem.id } });
-            defender.health = 1;
-            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defenderId, 1, 0 } });
-            defender.heldItem = null;
-        }
-
+        // If after all of this the attacker or defender has 0 or less health, they die
         if (defender.health <= 0)
         {
+            HandleDeath(events, defender);
+
+            // if the defender has the curse ability, kill the attacker
+            if (defender.abilityType == AbilityType.Curse && attacker.health > 0)
+            {
+                events.Add(new GameEvent { eventType = EventType.UnitAbilityActivation, data = new List<object> { defender.id } });
+                attacker.health = 0;
+            }
+        }
+        if (attacker.health <= 0)
+        {
+            HandleDeath(events, attacker);
+        }
+    }
+
+    private static void HandleDeath(List<GameEvent> events, Card unit)
+    {
+        // If the unit is holding a pentagram, set unit health to 1 and do not die
+        if (unit.heldItem != null && unit.heldItem.itemType == ItemType.Pentagram)
+        {
+            events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { unit.id, unit.heldItem.id } });
+            unit.health = 1;
+            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { unit.id, 1, 0 } });
+            unit.heldItem = null;
+        }
+        // otherwise, the unit dies
+        else
+        {
+            // Remove unit from field
             if (phase == Phase.PlayerUnits)
             {
-                enemyUnits.Remove(defender);
+                enemyUnits.Remove(unit);
             }
             else
             {
-                playerUnits.Remove(defender);
+                playerUnits.Remove(unit);
             }
-            events.Add(new GameEvent { eventType = EventType.UnitDied, data = new List<object> { defenderId } });
+            // Send death event
+            events.Add(new GameEvent { eventType = EventType.UnitDied, data = new List<object> { unit.id } });
 
+            // Determine if the game has ended
             if (HasWon())
             {
                 events.Add(new GameEvent { eventType = EventType.EncounterEnded, data = new List<object> { true } });
@@ -281,8 +379,6 @@ public static partial class Game
                 events.Add(new GameEvent { eventType = EventType.EncounterEnded, data = new List<object> { false } });
             }
         }
-
-        return events;
     }
 }
 
@@ -301,6 +397,7 @@ public class Card : ICloneable
     public CardType cardType;
     public UnitType unitType;
     public ItemType itemType;
+    public AbilityType abilityType;
     public int health;
     public int damage;
     public Card heldItem;
@@ -343,6 +440,7 @@ public class Card : ICloneable
         card.itemType = ItemType.NotApplicable;
         card.health = CardDicts.unitHealthDict[unitType];
         card.damage = CardDicts.unitDamageDict[unitType];
+        card.abilityType = CardDicts.unitAbilityDict[unitType];
         return card;
     }
 
@@ -352,6 +450,7 @@ public class Card : ICloneable
         card.cardType = CardType.Item;
         card.unitType = UnitType.NotApplicable;
         card.itemType = itemType;
+        card.abilityType = AbilityType.None;
         return card;
     }
 }
@@ -386,4 +485,16 @@ public enum ItemType
     Pentagram,  // If killed, revive with 1 hp
     Sword,      // +2 damage for the attack
     Coffee      // Gain an extra attack after attacking
+}
+
+public enum AbilityType
+{
+    None,
+    Intimidate,     // If attacked, lower attackers atk by 2 (min 1)
+    Curse,          // If attacked, set hp of attacker and defender to 0
+    Wild,           // After attacking, attack and defense stats swap
+    Bloodsucker,    // After attacking, regenerate 1 hp
+    Lazy,           // After attacking, require an extra turn's worth of rest to get another attack
+    Swarm,          // Gets triple the amount of rest per turn
+    Spikey          // When attacked, deal 1 damage to the attacker
 }

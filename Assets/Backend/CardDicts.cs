@@ -20,4 +20,10 @@ public static class CardDicts
         {UnitType.Camel, 1},
         {UnitType.BaseGame, 5}
     };
+
+    public static Dictionary<UnitType, AbilityType> unitAbilityDict = new Dictionary<UnitType, AbilityType>
+    {
+        {UnitType.Camel, AbilityType.None},
+        {UnitType.BaseGame, AbilityType.None}
+    };
 }
