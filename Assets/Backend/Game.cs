@@ -45,6 +45,17 @@ public static partial class Game
         Game.phase = Phase.PlayerCards;
 
         enemyUnits = CardDicts.encounterDict[encounterType].Select(x => Card.UnitCard(x)).ToList();
+        Random random = new Random();
+        foreach (Card unit in enemyUnits)
+        {
+            // 1 in 5 chance of having an item
+            int randomNumber = random.Next(0, 5);
+            if (randomNumber == 0)
+            {
+                unit.heldItem = Card.ItemCard(CardDicts.unitItemDict[unit.unitType]);
+                unit.heldItemTurn = turn;
+            }
+        }
         events.Add(new GameEvent { eventType = EventType.EncounterStarted, data = new List<object> { enemyUnits } });
 
         Game.deck = deck;
@@ -469,17 +480,14 @@ public enum CardType
 public enum UnitType
 {
     NotApplicable,
-    Camel,
-    Wolf,
-    Owl,
-    Octopus,
-    Snake,
-    Gecko,
-    Bee,
+    Dog,
     Bat,
-    Hedgehog,
-    Crocodile,
-    BaseGame
+    Gorilla,
+    Bee,
+    Porcupine,
+    Monkey,
+    Spider,
+    Lion
 }
 
 public enum ItemType
