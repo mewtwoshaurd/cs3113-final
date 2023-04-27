@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 319390150112618094}
   - component: {fileID: 319390150112618095}
   - component: {fileID: 319390150112618088}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlaySlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}

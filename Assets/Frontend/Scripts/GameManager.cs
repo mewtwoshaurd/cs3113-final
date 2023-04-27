@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -42,28 +43,45 @@ public class GameManager : MonoBehaviour
             if (e.eventType == EventType.EncounterStarted)
             {
                 enemies = (List<Card>)e.data[0];
-                Debug.Log(enemies);
+                //Debug.Log(enemies);
             }
             if (e.eventType == EventType.HandGiven)
             {
                 hand = (List<Card>)e.data[0];
-                Debug.Log(hand);
+                //Debug.Log(hand);
             }
+            print(e);
         }
 
         GenerateHand(hand);
         GenerateEnemies(enemies);
+        for(int i =0; i<hand.Count;i++){
+            int id = hand[i].id;
+            Game.PlayUnit(id);
+        }
 
-        Game.EndPhase();
+        events = Game.EndPhase();
+        foreach(GameEvent e in events){
+            print(e);
+        }
 
+        events = Game.EndPhase();
+        foreach(GameEvent e in events){
+            print(e);
+        }
+
+        // events = Game.AttackUnit(hand[0].id,enemies[0].id);
+        // foreach(GameEvent e in events){
+        //     print(e);
+        // }
     }
 
     // Update is called once per frame
     void Update()
     {   
         
-        print("phaseChanged: " + PhaseChanged);
-        print("phase: " + phaseNum);
+        //print("phaseChanged: " + PhaseChanged);
+        //print("phase: " + phaseNum);
         if(phaseNum==0 && !PhaseChanged){
             PhaseButton.text = "NEXT";
             StartCoroutine(PhaseTextChange("CARD PHASE",4f));
@@ -85,13 +103,20 @@ public class GameManager : MonoBehaviour
     }
 
     public void IncrementPhase(){
-		if(phaseNum<2){
-            phaseNum++;
+        try{
+            events = Game.EndPhase();
+            if(phaseNum<2){
+                phaseNum++;
+            }
+            else{
+                phaseNum=0;
+            }
+            PhaseChanged = !PhaseChanged;
         }
-        else{
-            phaseNum=0;
+        catch(Exception e){
+            PhaseText.text = "Play Card to Continue";
         }
-        PhaseChanged = !PhaseChanged;
+		
 	}
 
     public bool hasPhaseChanged(){
@@ -124,12 +149,10 @@ public class GameManager : MonoBehaviour
         return slotid;
     }
 
-    /*public void UpdateGameSlot(int slotid)
-    {
-
-        events = Game.PlayUnit();
-        Debug.Log(events[0]);
-    }*/
+    // public void UpdateGameSlot(int slotid)
+    // {
+    //     events = Game.PlayUnit(slotid);
+    // }
 
 
     void GenerateEnemies(List<Card> enemies){
@@ -137,9 +160,8 @@ public class GameManager : MonoBehaviour
         int enemySlotId = 0;
         GameObject currentCard;
         foreach(Card enemy in enemies){
-            print("enemy "+ enemySlotId);
-            Instantiate(cardPrefab,enemyslots[enemySlotId].transform.position, Quaternion.identity);
-            print();
+            //print("enemy "+ enemySlotId);
+            Instantiate(cardPrefab,new Vector3(enemyslots[enemySlotId].transform.position.x,enemyslots[enemySlotId].transform.position.y,enemyslots[enemySlotId].transform.position.z-.01f), Quaternion.identity);
             enemySlotId++;
         }
     }

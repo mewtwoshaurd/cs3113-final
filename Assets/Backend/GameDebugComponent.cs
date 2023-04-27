@@ -9,7 +9,7 @@ public class GameDebugComponent : MonoBehaviour
         List<Card> cards = new List<Card>();
         for (int i = 0; i < 6; i++)
         {
-            cards.Add(Card.UnitCard(UnitType.Camel));
+            cards.Add(Card.UnitCard(UnitType.Dog));
         }
 
         PrintEvents(Game.StartEncounter(cards, UnitType.Dog));

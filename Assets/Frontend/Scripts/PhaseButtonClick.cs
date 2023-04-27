@@ -27,9 +27,9 @@ public class PhaseButtonClick : MonoBehaviour
             Touch touch = Input.GetTouch(0);
             int id = touch.fingerId;
             if (touch.phase == TouchPhase.Began){
-                Debug.Log(EventSystem.current.IsPointerOverGameObject(id));
+                //Debug.Log(EventSystem.current.IsPointerOverGameObject(id));
                 if (EventSystem.current.IsPointerOverGameObject(id) && (_gm.hasPhaseChanged())){
-                    Debug.Log("buttonClicked");
+                    //Debug.Log("buttonClicked");
                     _gm.IncrementPhase();
                 }
             }
