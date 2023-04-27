@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
 
     List<Card> enemies = new List<Card>();
 
+    public Transform enemyDeck;
     public GameObject[] playerslots;
 
     public GameObject[] handslots;
@@ -26,6 +27,8 @@ public class GameManager : MonoBehaviour
     public Button PhaseButtonUI;
 
     private bool PhaseChanged = false;
+
+    public int turnNum = 1;
     
 
     List<Card> hand = new List<Card>();
@@ -80,26 +83,29 @@ public class GameManager : MonoBehaviour
     void Update()
     {   
         
+        
         //print("phaseChanged: " + PhaseChanged);
         //print("phase: " + phaseNum);
         if(phaseNum==0 && !PhaseChanged){
             PhaseButton.text = "NEXT";
-            StartCoroutine(PhaseTextChange("CARD PHASE",4f));
+            StartCoroutine(PhaseTextChange("TURN "+turnNum,4f,"CARD PHASE",4f));
             
         }
         if(phaseNum==1 && !PhaseChanged){
             PhaseButton.text = "END";
             StartCoroutine(PhaseTextChange("ATTACK PHASE",4f));
-            
         }
         if(phaseNum==2 && !PhaseChanged){
             PhaseButton.text = "NEXT";
             StartCoroutine(PhaseTextChange("ENEMY PHASE",4f));
             foreach (Card enemy in enemies){
-                Game.AttackUnit(enemy.id,hand[0].id);    
+                Game.AttackUnit(enemy.id,hand[0].id);   
+                turnNum++; 
             }
-            
         }
+
+        
+
     }
 
     public void IncrementPhase(){
@@ -156,12 +162,12 @@ public class GameManager : MonoBehaviour
 
 
     void GenerateEnemies(List<Card> enemies){
-
         int enemySlotId = 0;
         GameObject currentCard;
         foreach(Card enemy in enemies){
             //print("enemy "+ enemySlotId);
-            Instantiate(cardPrefab,new Vector3(enemyslots[enemySlotId].transform.position.x,enemyslots[enemySlotId].transform.position.y,enemyslots[enemySlotId].transform.position.z-.01f), Quaternion.identity);
+            currentCard = Instantiate(cardPrefab,new Vector3(enemyDeck.transform.position.x,enemyDeck.transform.position.y,enemyDeck.transform.position.z), Quaternion.identity);
+            StartCoroutine(Lerp(currentCard,new Vector3(enemyslots[enemySlotId].transform.position.x,enemyslots[enemySlotId].transform.position.y,enemyslots[enemySlotId].transform.position.z - .01f),1f));
             enemySlotId++;
         }
     }
@@ -177,16 +183,28 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    IEnumerator PhaseTextChange(string PhaseName, float seconds)
+    IEnumerator PhaseTextChange(string PhaseName, float FirstWait, String NextText = "",float SecondWait = 0f)
     {
-        PhaseText.text = PhaseName;
-        yield return new WaitForSeconds(seconds);
-        PhaseText.text = "";
         PhaseChanged=true;
-    }
-    IEnumerator WaitXSeconds(float x){
-        yield return new WaitForSeconds(x);
+        PhaseText.text = PhaseName;
+        yield return new WaitForSeconds(FirstWait);
+        PhaseText.text = NextText;
+        yield return new WaitForSeconds(SecondWait);
+        PhaseText.text = "";
+
     }
 
+    IEnumerator Lerp(GameObject obj,Vector3 end,float duration)
+    {
+        float time = 0;
+        Vector3 start = obj.transform.position;  
+        while (time < duration)
+        {
+            obj.transform.position = Vector3.Lerp(start, end, time / duration);
+            time += Time.deltaTime;
+            yield return null;
+        }
+        obj.transform.position = end;
+    }
 
 }
