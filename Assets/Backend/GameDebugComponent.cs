@@ -12,7 +12,7 @@ public class GameDebugComponent : MonoBehaviour
             cards.Add(Card.UnitCard(UnitType.Camel));
         }
 
-        PrintEvents(Game.StartEncounter(cards, UnitType.Camel));
+        PrintEvents(Game.StartEncounter(cards, UnitType.Dog));
         PrintEvents(Game.EndPhase());
         PrintEvents(Game.PlayUnit(1));
         PrintEvents(Game.EndPhase());

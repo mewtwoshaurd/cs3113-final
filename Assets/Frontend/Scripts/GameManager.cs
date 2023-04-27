@@ -34,9 +34,9 @@ public class GameManager : MonoBehaviour
     {	   
         for(int i = 0; i < 20; i++)
         {
-            deck.Add(Card.UnitCard(UnitType.BaseGame));
+            deck.Add(Card.UnitCard(UnitType.Dog));
         }
-        events = Game.StartEncounter(deck, UnitType.BaseGame);
+        events = Game.StartEncounter(deck, UnitType.Dog);
         foreach(GameEvent e in events)
         {
             if (e.eventType == EventType.EncounterStarted)
