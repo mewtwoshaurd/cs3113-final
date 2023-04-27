@@ -35,17 +35,17 @@ public class CardObject : MonoBehaviour
     {
         if(Input.touchCount > 0)
         {
-            Debug.Log("Touch Input");
+            //Debug.Log("Touch Input");
             Touch touch = Input.GetTouch(0);
             slotid = _gm.IsTouchingPlayerSlot(touch);
             if (touch.phase == TouchPhase.Began && (_gm.IsTouched(touch, _coll) && !isPlayed))
             {
-                Debug.Log("selected!");
+                //Debug.Log("selected!");
                 isSelected = true;
             }
             else if (touch.phase == TouchPhase.Began && isSelected && (slotid >= 0) &&!isPlayed)
             {
-                Debug.Log("play!");
+                //Debug.Log("play!");
                 Transform slotTrans = _gm.playerslots[slotid].transform;
                 Vector3 newPos = new Vector3(slotTrans.position.x, slotTrans.position.y, slotTrans.position.z + cardOffset);
                 transform.position = newPos;
@@ -55,7 +55,7 @@ public class CardObject : MonoBehaviour
             }
             else if (touch.phase == TouchPhase.Began && !(_gm.IsTouched(touch, _coll)) &&!isPlayed)
             {
-                Debug.Log("unselected!");
+                //Debug.Log("unselected!");
                 isSelected = false;
             }
         }

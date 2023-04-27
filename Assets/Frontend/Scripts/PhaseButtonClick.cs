@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PhaseButtonClick : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class PhaseButtonClick : MonoBehaviour
 
     BoxCollider _coll;
     GameManager _gm;
+    bool isSelected = false;
     int unitId;
     void Start()
     {
@@ -22,13 +24,16 @@ public class PhaseButtonClick : MonoBehaviour
     {
         if(Input.touchCount > 0)
         {
-            Debug.Log("Touch Input");
             Touch touch = Input.GetTouch(0);
-            if (touch.phase == TouchPhase.Began)
-            {
-                Debug.Log(_gm.IsTouched(touch,_coll));
-                Debug.Log("clicked!");
+            int id = touch.fingerId;
+            if (touch.phase == TouchPhase.Began){
+                Debug.Log(EventSystem.current.IsPointerOverGameObject(id));
+                if (EventSystem.current.IsPointerOverGameObject(id) && (_gm.hasPhaseChanged())){
+                    Debug.Log("buttonClicked");
+                    _gm.IncrementPhase();
+                }
             }
+            
         }
     }
 }

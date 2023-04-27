@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2657381645266730502}
   - component: {fileID: 2657381645266730498}
   - component: {fileID: 2657381645266730499}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Card
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -113,7 +113,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 120
   m_CollisionDetection: 0
 --- !u!114 &2657381645266730499
 MonoBehaviour:

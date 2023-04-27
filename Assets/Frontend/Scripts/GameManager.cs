@@ -52,61 +52,56 @@ public class GameManager : MonoBehaviour
         }
 
         GenerateHand(hand);
+        GenerateEnemies(enemies);
 
-        
-
-        
         Game.EndPhase();
 
     }
 
     // Update is called once per frame
     void Update()
-    {
-        Button btn = PhaseButtonUI.GetComponent<Button>();
-        btn.onClick.AddListener(IncrementPhase);
+    {   
         
+        print("phaseChanged: " + PhaseChanged);
+        print("phase: " + phaseNum);
         if(phaseNum==0 && !PhaseChanged){
             PhaseButton.text = "NEXT";
-            StartCoroutine(PhaseTextChange("CARD PHASE",2.5f));
-            print("phase text change complete");
-            PhaseChanged=true;
+            StartCoroutine(PhaseTextChange("CARD PHASE",4f));
+            
         }
         if(phaseNum==1 && !PhaseChanged){
             PhaseButton.text = "END";
-            StartCoroutine(PhaseTextChange("ATTACK PHASE",2.5f));
-            PhaseChanged=true;
+            StartCoroutine(PhaseTextChange("ATTACK PHASE",4f));
+            
         }
         if(phaseNum==2 && !PhaseChanged){
             PhaseButton.text = "NEXT";
-            StartCoroutine(PhaseTextChange("ENEMY CARD PHASE",2.5f));
-            PhaseChanged=true;
-        }
-        if(phaseNum==3 && !PhaseChanged){
-            PhaseButton.text = "NEXT";
-            StartCoroutine(PhaseTextChange("ENEMY ATTACK PHASE",2.5f));
-            StartCoroutine(WaitXSeconds(1));
-            PhaseChanged=true;
-
+            StartCoroutine(PhaseTextChange("ENEMY PHASE",4f));
+            foreach (Card enemy in enemies){
+                Game.AttackUnit(enemy.id,hand[0].id);    
+            }
+            
         }
     }
 
-    void IncrementPhase(){
-		if(phaseNum<3){
+    public void IncrementPhase(){
+		if(phaseNum<2){
             phaseNum++;
         }
         else{
             phaseNum=0;
         }
-        PhaseChanged = false;
+        PhaseChanged = !PhaseChanged;
 	}
+
+    public bool hasPhaseChanged(){
+        return PhaseChanged;
+    }
 
     public bool IsTouched(Touch touch, BoxCollider collider)
     {
         Ray _ray = Camera.main.ScreenPointToRay(new Vector3(touch.position.x, touch.position.y, 0));
-        Debug.Log(_ray);
         RaycastHit _hit;
-        print(_hit);
 
         return collider.Raycast(_ray, out _hit, 1000.0f);
     }
@@ -136,6 +131,18 @@ public class GameManager : MonoBehaviour
         Debug.Log(events[0]);
     }*/
 
+
+    void GenerateEnemies(List<Card> enemies){
+
+        int enemySlotId = 0;
+        GameObject currentCard;
+        foreach(Card enemy in enemies){
+            print("enemy "+ enemySlotId);
+            Instantiate(cardPrefab,enemyslots[enemySlotId].transform.position, Quaternion.identity);
+            print();
+            enemySlotId++;
+        }
+    }
     void GenerateHand(List<Card> hand)
     {
         int handslotid = 0;
@@ -153,6 +160,7 @@ public class GameManager : MonoBehaviour
         PhaseText.text = PhaseName;
         yield return new WaitForSeconds(seconds);
         PhaseText.text = "";
+        PhaseChanged=true;
     }
     IEnumerator WaitXSeconds(float x){
         yield return new WaitForSeconds(x);
