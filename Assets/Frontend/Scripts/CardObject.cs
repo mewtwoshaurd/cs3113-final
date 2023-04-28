@@ -112,35 +112,32 @@ public class CardObject : MonoBehaviour
                 slotid = _gm.IsTouchingPlayerSlot(touchPos);
                 print("slotId " + slotid);
 
-                if (attacksPerTurn == 0)
+                /*if (attacksPerTurn == 0)
                 {
                     _gm.PhaseTextChange("NO MORE ATTACKS", 1f);
-                }
-                else
+                }*/
+                if (isTouching && !(_gm.IsTouched(touchPos, _coll)) && isSelected && attacksPerTurn != 0)
                 {
-                    if (isTouching && !(_gm.IsTouched(touchPos, _coll)) && isSelected && attacksPerTurn != 0)
+                    print("picking enemy");
+                    enemyCardId = _gm.IsTouchingEnemyCard(touchPos);
+                    print("enemyID " + enemyCardId);
+                    if (enemyCardId >= 0)
                     {
-                        print("picking enemy");
-                        print("enemyID " + enemyCardId);
-                        enemyCardId = _gm.IsTouchingEnemyCard(touchPos);
-                        if (enemyCardId > -1)
-                        {
-                            _gm.AttackEvent(unitId, enemyCardId);
-                            print("attacked");
-                            attacksPerTurn--;
-                            print(attacksPerTurn);
-                            attacking = false;
-                        }
-                        isSelected = false;
+                        _gm.AttackEvent(unitId, enemyCardId);
+                        print("attacked");
+                        //attacksPerTurn--;
+                        //print(attacksPerTurn);
+                        attacking = false;
                     }
+                    isSelected = false;
+                }
 
-                    else if (isTouching && (_gm.IsTouched(touchPos, _coll)) && attacksPerTurn != 0 && !attacking)
-                    {
-                        isSelected = true;
-                        StartCoroutine(_gm.PhaseTextChange("pick an enemy to attack", 1f));
-                        print("picking player");
-                        attacking = true;
-                    }
+                else if (isTouching && (_gm.IsTouched(touchPos, _coll)) && attacksPerTurn != 0 && !attacking)
+                {
+                    isSelected = true;
+                    StartCoroutine(_gm.PhaseTextChange("pick an enemy to attack", 1f));
+                    print("picking player");
+                    attacking = true;
                 }
                 break;
             

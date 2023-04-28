@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 
     List<Card> enemies = new List<Card>();
 
-    public Transform enemyDeck;
+    //public Transform enemyDeck;
     public GameObject[] playerslots;
 
     public GameObject[] handslots;
@@ -221,7 +221,7 @@ public class GameManager : MonoBehaviour
             if(enemyCardObjs[i]!=null){
                 card = enemyCardObjs[i];
                 _coll = card.GetComponent<BoxCollider>();
-                if(IsTouched(touch, _coll))
+                if(IsTouched(touch, _coll) && card.tag == "EnemyCard")
                 {
                     cardId = i;
                     break;
@@ -241,7 +241,7 @@ public class GameManager : MonoBehaviour
         {
             card = enemyCardObjs[i];
             _coll = card.GetComponent<BoxCollider>();
-            if (IsTouched(mousePos, _coll))
+            if (IsTouched(mousePos, _coll) && card.tag == "EnemyCard")
             {
                 cardId = i;
                 break;
@@ -262,12 +262,14 @@ public class GameManager : MonoBehaviour
     {
         int enemySlotId = 0;
         GameObject currentCard;
-        print(enemies.Count);
-        print(enemyslots.Length);
+        //print(enemies.Count);
+        //print(enemyslots.Length);
         foreach (Card enemy in enemies)
         {
             //print("enemy "+ enemySlotId);
-            currentCard = Instantiate(enemyPrefab, enemyDeck.transform.position,Quaternion.Euler(0, 0, 180)); 
+            currentCard = Instantiate(enemyPrefab, new Vector3(enemyslots[enemySlotId].transform.position.x, enemyslots[enemySlotId].transform.position.y, enemyslots[enemySlotId].transform.position.z), Quaternion.identity); 
+            Debug.Log(enemy.id);
+            Debug.Log(currentCard);
             currentCard.GetComponent<CardObject>().SetUnitId(enemy.id);
             currentCard.tag = "EnemyCard";
             currentCard.GetComponent<CardObject>().SetUnitType(enemy.unitType);
