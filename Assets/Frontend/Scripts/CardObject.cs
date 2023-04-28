@@ -23,6 +23,8 @@ public class CardObject : MonoBehaviour
     bool isPlayed = false;
 
     int slotid = -1;
+
+    int phaseNum=0;
     void Start()
     {
         _rigidbody = GetComponent<Rigidbody>();
@@ -33,35 +35,46 @@ public class CardObject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.touchCount > 0)
-        {
             //Debug.Log("Touch Input");
             Touch touch = Input.GetTouch(0);
             slotid = _gm.IsTouchingPlayerSlot(touch);
-            if (touch.phase == TouchPhase.Began && (_gm.IsTouched(touch, _coll) && !isPlayed))
-            {
-                //Debug.Log("selected!");
-                isSelected = true;
-            }
-            else if (touch.phase == TouchPhase.Began && isSelected && (slotid >= 0) &&!isPlayed)
-            {
-                //Debug.Log("play!");
-                Transform slotTrans = _gm.playerslots[slotid].transform;
-                Vector3 newPos = new Vector3(slotTrans.position.x, slotTrans.position.y, slotTrans.position.z + cardOffset);
-                transform.position = newPos;
-                isSelected = false;
-                isPlayed = true;
-                //_gm.UpdateGameSlot(slotid);
-            }
-            else if (touch.phase == TouchPhase.Began && !(_gm.IsTouched(touch, _coll)) &&!isPlayed)
-            {
-                //Debug.Log("unselected!");
-                isSelected = false;
-            }
+        switch(phaseNum){
+            case 0:
+                if (touch.phase == TouchPhase.Began && (_gm.IsTouched(touch, _coll) && !isPlayed)){
+                    //Debug.Log("selected!");
+                    isSelected = true;
+                }
+                else if (touch.phase == TouchPhase.Began && isSelected && (slotid >= 0) &&!isPlayed)
+                {
+                    //Debug.Log("play!");
+                    Transform slotTrans = _gm.playerslots[slotid].transform;
+                    Vector3 newPos = new Vector3(slotTrans.position.x, slotTrans.position.y, slotTrans.position.z + cardOffset);
+                    transform.position = newPos;
+                    isSelected = false;
+                    isPlayed = true;
+                    //_gm.UpdateGameSlot(slotid);
+                }
+                else if (touch.phase == TouchPhase.Began && !(_gm.IsTouched(touch, _coll)) &&!isPlayed)
+                {
+                    //Debug.Log("unselected!");
+                    isSelected = false;
+                }
+                break;
+            case 1:
+                if(Input.touchCount > 0)
+                {
+                    //Debug.Log("Touch Input");
+                    Touch touch = Input.GetTouch(0);
+                    slotid = _gm.IsTouchingPlayerSlot(touch);
+                }
+                break;
+            case 2:
+                break;
         }
+        
 
     }
-
+/*
     public void SetUnitId(int id)
     {
         unitId = id;
@@ -70,5 +83,5 @@ public class CardObject : MonoBehaviour
     public int GetUnitId()
     {
         return unitId;
-    }
+    }*/
 }
