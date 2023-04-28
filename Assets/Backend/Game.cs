@@ -189,6 +189,7 @@ public static partial class Game
             // change phase
             phase = Phase.EnemyUnits;
             events.Add(new GameEvent { eventType = EventType.PhaseEnded, data = new List<object> { phase } });
+            HandleEnemyTurn(events);
         }
         else if (phase == Phase.EnemyUnits)
         {
@@ -395,6 +396,30 @@ public static partial class Game
                 events.Add(new GameEvent { eventType = EventType.EncounterEnded, data = new List<object> { false } });
             }
         }
+    }
+
+    private static void HandleEnemyTurn(List<GameEvent> events)
+    {
+        // Make a list of the enemy units and order it by the unit's attack strength from lowest to highest
+        List<Card> orderedEnemyUnits = enemyUnits.OrderBy(unit => unit.damage).ToList();
+
+        // while the player has units alive, the enemy has units alive, and the enemy has units that can attack
+        while (playerUnits.Count > 0 && enemyUnits.Count > 0 && orderedEnemyUnits.Count > 0)
+        {
+            Card weakestRemaining = orderedEnemyUnits[0];
+            if (weakestRemaining.attacksRemaining <= 0 || weakestRemaining.health <= 0)
+            {
+                orderedEnemyUnits.RemoveAt(0);
+                continue;
+            }
+            // Find the player unit with the lowest health and attack it
+            Card weakestPlayerUnit = playerUnits.OrderBy(unit => unit.health).ToList()[0];
+            List<GameEvent> attackEvents = AttackUnit(weakestRemaining.id, weakestPlayerUnit.id);
+            events.AddRange(attackEvents);
+        }
+
+        List<GameEvent> endPhaseEvents = EndPhase();
+        events.AddRange(endPhaseEvents);
     }
 }
 
