@@ -47,11 +47,11 @@ public class CardObject : MonoBehaviour
                 if(Input.touchCount > 0){
                     touch = Input.GetTouch(0);
                     slotid = _gm.IsTouchingPlayerSlot(touch);
-                    if (touch0.phase == TouchPhase.Began && (_gm.IsTouched(touch, _coll) && !isPlayed)){
+                    if (touch.phase == TouchPhase.Began && (_gm.IsTouched(touch, _coll) && !isPlayed)){
                         //Debug.Log("selected!");
                         isSelected = true;
                     }
-                    else if (touch0.phase == TouchPhase.Began && isSelected && (slotid >= 0) &&!isPlayed)
+                    else if (touch.phase == TouchPhase.Began && isSelected && (slotid >= 0) &&!isPlayed)
                     {
                         //Debug.Log("play!");
                         Transform slotTrans = _gm.playerslots[slotid].transform;
@@ -61,7 +61,7 @@ public class CardObject : MonoBehaviour
                         isPlayed = true;
                         //_gm.UpdateGameSlot(slotid);
                     }
-                    else if (touch0.phase == TouchPhase.Began && !(_gm.IsTouched(touch, _coll)) &&!isPlayed)
+                    else if (touch.phase == TouchPhase.Began && !(_gm.IsTouched(touch, _coll)) &&!isPlayed)
                     {
                         //Debug.Log("unselected!");
                         isSelected = false;
