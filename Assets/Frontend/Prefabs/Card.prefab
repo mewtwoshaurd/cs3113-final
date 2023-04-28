@@ -93,8 +93,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.25
-  m_fontSizeBase: 0.25
+  m_fontSize: 0.4
+  m_fontSizeBase: 0.4
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -276,7 +276,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0.04, y: -0.32}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7286218701709423297
@@ -334,8 +334,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.25
-  m_fontSizeBase: 0.25
+  m_fontSize: 0.4
+  m_fontSizeBase: 0.4
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -648,10 +648,13 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 4efc9eabca2971b4fadaf4c9fa97b92e, type: 2}
   - {fileID: 2100000, guid: 5ae74741161389d4dba94d3ab9e19e38, type: 2}
   - {fileID: 2100000, guid: 9cf2fb8fa33025d4395287fbbdd59c2e, type: 2}
+  unitId: 0
+  health: 0
   _health: {fileID: 8039624674808433471}
   _attack: {fileID: 2634085720831564483}
   _name: {fileID: 392121107318463708}
   _ability: {fileID: 6214787749588281284}
+  attacksPerTurn: 4
 --- !u!1 &5677370283893657237
 GameObject:
   m_ObjectHideFlags: 0
@@ -669,7 +672,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3223944681426462924
 RectTransform:
   m_ObjectHideFlags: 0
@@ -880,8 +883,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.25
-  m_fontSizeBase: 0.25
+  m_fontSize: 0.4
+  m_fontSizeBase: 0.4
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

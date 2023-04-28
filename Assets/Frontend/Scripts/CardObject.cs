@@ -113,10 +113,10 @@ public class CardObject : MonoBehaviour
                 slotid = _gm.IsTouchingPlayerSlot(touchPos);
                 print("slotId " + slotid);
 
-                /*if (attacksPerTurn == 0)
+                if (attacksPerTurn == 0)
                 {
                     _gm.PhaseTextChange("NO MORE ATTACKS", 1f);
-                }*/
+                }
                 if (isTouching && !(_gm.IsTouched(touchPos, _coll)) && isSelected && attacksPerTurn != 0)
                 {
                     print("playerid " + unitId);
@@ -132,6 +132,7 @@ public class CardObject : MonoBehaviour
                         attacking = false;
                     }
                     isSelected = false;
+                    attacksPerTurn = 0;
                 }
 
                 else if (isTouching && (_gm.IsTouched(touchPos, _coll)) && attacksPerTurn != 0 && !attacking && !isSelected)

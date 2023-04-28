@@ -191,7 +191,7 @@ public class GameManager : MonoBehaviour
                     {
                         /*Debug.Log(e.data[3]);
                         Debug.Log(e.data[4]);*/
-                        card.UpdateStats((int)(e.data[3])-(int)(e.data[1]), (int)(e.data[3])-(int)(e.data[2]));
+                        card.UpdateStats((int)(e.data[3])+(int)(e.data[1]), (int)(e.data[3])+(int)(e.data[2]));
                     }
                 }
                 foreach(GameObject go in enemycards)
@@ -202,7 +202,7 @@ public class GameManager : MonoBehaviour
                     {
                         /*Debug.Log(e.data[3]);
                         Debug.Log(e.data[4]);*/
-                        card.UpdateStats((int)(e.data[3])-(int)(e.data[1]), (int)(e.data[4])-(int)(e.data[2]));
+                        card.UpdateStats((int)(e.data[3])+(int)(e.data[1]), (int)(e.data[4])+(int)(e.data[2]));
                     }
                 }
             }
@@ -223,8 +223,7 @@ public class GameManager : MonoBehaviour
                     var card = go.GetComponent<CardObject>();
                     if(idToCheck == card.GetUnitId())
                     {
-                        Debug.Log("Found card");
-                        card.UpdateStats((int)e.data[1], (int)e.data[2]);
+                        Destroy(card);
                     }
                 }
             }
@@ -234,6 +233,63 @@ public class GameManager : MonoBehaviour
             }
         }
         events = Game.EndPhase();
+        foreach (GameEvent e in events)
+        {
+            //Debug.Log(e.eventType);
+            if(e.eventType==EventType.UnitStatChanged)
+            {
+                //Debug.Log("Changing Stats");
+                int idToCheck = (int)e.data[0];
+                foreach(GameObject go in playercards)
+                {
+                    //Debug.Log("Selected Stats to Change");
+                    var card = go.GetComponent<CardObject>();
+                    if(idToCheck == card.GetUnitId())
+                    {
+                        /*Debug.Log(e.data[3]);
+                        Debug.Log(e.data[4]);*/
+                        card.UpdateStats((int)(e.data[3])+(int)(e.data[1]), (int)(e.data[3])+(int)(e.data[2]));
+                    }
+                }
+                foreach(GameObject go in enemycards)
+                {
+                    //Debug.Log("Selected Stats to Change");
+                    var card = go.GetComponent<CardObject>();
+                    if(idToCheck == card.GetUnitId())
+                    {
+                        /*Debug.Log(e.data[3]);
+                        Debug.Log(e.data[4]);*/
+                        card.UpdateStats((int)(e.data[3])+(int)(e.data[1]), (int)(e.data[4])+(int)(e.data[2]));
+                    }
+                }
+            }
+            if(e.eventType == EventType.UnitDied)
+            {
+                int idToCheck = (int)e.data[0];
+                foreach(GameObject go in playercards)
+                {
+                    var card = go.GetComponent<CardObject>();
+                    if(idToCheck == card.GetUnitId())
+                    {
+                        //Print("Should kill.")
+                        Destroy(card);
+                    }
+                }
+                foreach(GameObject go in enemycards)
+                {
+                    //Debug.Log("Selected Stats to Change");
+                    var card = go.GetComponent<CardObject>();
+                    if(idToCheck == card.GetUnitId())
+                    {
+                        Destroy(card);
+                    }
+                }
+            }
+            if(e.eventType == EventType.EncounterEnded)
+            {
+                Debug.Log("joever");
+            }
+        }
     }
     public int IsTouchingPlayerSlot(Touch touch)
     {
