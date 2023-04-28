@@ -120,6 +120,7 @@ public class GameManager : MonoBehaviour
         catch (Exception e)
         {
             PhaseText.text = "Play Card to Continue";
+            print(e.Message);
         }
 
     }
