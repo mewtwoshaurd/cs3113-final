@@ -22,13 +22,14 @@ public class CardObject : MonoBehaviour
 
     GameManager _gm;
 
-    int unitId;
+    public int unitId;
 
     bool isSelected = false;
 
     bool isPlayed = false;
 
     int slotid = -1;
+    int enemyCardId = -1;
 
     bool inHand = false;
 
@@ -38,9 +39,14 @@ public class CardObject : MonoBehaviour
 
     public TMPro.TextMeshProUGUI _attack;
 
+    List<GameEvent> events = new List<GameEvent>();
     public TMPro.TextMeshProUGUI _name;
 
     public TMPro.TextMeshProUGUI _ability;
+
+    public int attacksPerTurn = 1;
+
+    public static bool attacking = false;
 
     int phaseNum=0;
     void Start()
@@ -87,24 +93,48 @@ public class CardObject : MonoBehaviour
                 }
                 break;
             case 1:
-                isSelected = false;
-                if(Input.touchCount > 0)
-                {
+                if(Input.touchCount > 0){
+                    print("isSelected "+isSelected);
                     touch = Input.GetTouch(0);
                     slotid = _gm.IsTouchingPlayerSlot(touch);
-                    if (touch.phase == TouchPhase.Began && (_gm.IsTouched(touch, _coll) && !isPlayed)){
-                        isSelected = true;
-                        StartCoroutine(_gm.PhaseTextChange("pick an enemy to attack",1f));
+                    print("slotId "+slotid);
+
+                    if(attacksPerTurn==0){
+                        _gm.PhaseTextChange("NO MORE ATTACKS",1f);
                     }
-                    if(touch.phase == TouchPhase.Began && isSelected){
-                        touch = Input.GetTouch(0);
-                        slotid = _gm.IsTouchingPlayerSlot(touch);
-                        print(slotid); 
+                    else{
+                        if(touch.phase == TouchPhase.Began && !(_gm.IsTouched(touch, _coll)) && isSelected && attacksPerTurn!=0){
+                            print("picking enemy");
+                            touch = Input.GetTouch(0);
+                            print("enemyID "+ enemyCardId);
+                            while(enemyCardId==-1){
+                                enemyCardId = _gm.IsTouchingEnemyCard(touch);
+                                if(enemyCardId>-1){
+                                    event = Game.AttackUnit(unitId,enemyCardId);
+                                    print("attacked");
+                                    attacksPerTurn--;
+                                    print(attacksPerTurn);
+                                    attacking = false;
+                                }
+                                isSelected = false;
+                            }
+                            
+                        }
+                        
+                        else if (touch.phase == TouchPhase.Began && (_gm.IsTouched(touch, _coll)) && attacksPerTurn!=0 && !attacking){
+                            isSelected = true;
+                            StartCoroutine(_gm.PhaseTextChange("pick an enemy to attack",1f));
+                            print("picking player");
+                            attacking = true;
+                        }
                     }
+
+                    
 
                 }
                 break;
             case 2:
+                attacksPerTurn = 1;
                 break;
             }
         }

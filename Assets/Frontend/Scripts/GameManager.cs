@@ -15,17 +15,20 @@ public class GameManager : MonoBehaviour
 
     public GameObject[] handslots;
 
-    public TMPro.TextMeshProUGUI PhaseButton;
+    public TMPro.TextMeshPro PhaseButton;
     public TMPro.TextMeshProUGUI PhaseText;
 
     public GameObject[] enemyslots;
+
+    public GameObject[] enemyCards = new GameObject[3];
+
+    public int[] enemyCardIds = new int[3];
 
     public GameObject cardPrefab;
 
     public int phaseNum;
 
-    public Button PhaseButtonUI;
-
+    public bool transitioning = false;
     private bool PhaseChanged = false;
 
     public int turnNum = 1;
@@ -37,7 +40,7 @@ public class GameManager : MonoBehaviour
     public UnitType[] currImplemented = new UnitType[] {UnitType.Dog, UnitType.Bee, UnitType.Bat, UnitType.Spider};
     // Start is called before the first frame update
     void Start()
-    {
+    {	   
         UnitType randtype;	   
         for(int i = 0; i < 20; i++)
         {
@@ -51,6 +54,7 @@ public class GameManager : MonoBehaviour
             if (e.eventType == EventType.EncounterStarted)
             {
                 enemies = (List<Card>)e.data[0];
+                print(enemies[0]);
                 //Debug.Log(enemies);
             }
             if (e.eventType == EventType.HandGiven)
@@ -89,22 +93,19 @@ public class GameManager : MonoBehaviour
     {   
         //print("phaseChanged: " + PhaseChanged);
         //print("phase: " + phaseNum);
-        if(phaseNum==0 && !PhaseChanged){
+        if(phaseNum==0 && !PhaseChanged && !transitioning){
             PhaseButton.text = "NEXT";
             StartCoroutine(PhaseTextChange("TURN "+turnNum,4f,"CARD PHASE",4f));
             
         }
-        if(phaseNum==1 && !PhaseChanged){
+        if(phaseNum==1 && !PhaseChanged&& !transitioning){
             PhaseButton.text = "END";
             StartCoroutine(PhaseTextChange("ATTACK PHASE",4f));
         }
-        if(phaseNum==2 && !PhaseChanged){
+        if(phaseNum==2 && !PhaseChanged&& !transitioning){
             PhaseButton.text = "NEXT";
             StartCoroutine(PhaseTextChange("ENEMY PHASE",4f));
             turnNum++; 
-            foreach (Card enemy in enemies){
-                Game.AttackUnit(enemy.id,hand[0].id);   
-            }
         }
 
     }
@@ -160,6 +161,30 @@ public class GameManager : MonoBehaviour
         return slotid;
     }
 
+    public int IsTouchingEnemyCard(Touch touch)
+    {
+        BoxCollider _coll;
+        GameObject card;
+        int cardId = -1;
+        for(int i = 0; i < enemyCards.Length; i++)
+        {
+            card = enemyCards[i];
+            _coll = card.GetComponent<BoxCollider>();
+            if(IsTouched(touch, _coll))
+            {
+                cardId = i;
+                break;
+            }
+        }
+        if(cardId>-1){
+            return enemyCardIds[cardId];
+        }
+        else{
+            return -1;
+        }
+        
+    }
+
     // public void UpdateGameSlot(int slotid)
     // {
     //     events = Game.PlayUnit(slotid);
@@ -174,7 +199,10 @@ public class GameManager : MonoBehaviour
         foreach(Card enemy in enemies){
             //print("enemy "+ enemySlotId);
             currentCard = Instantiate(cardPrefab,new Vector3(enemyDeck.transform.position.x,enemyDeck.transform.position.y,enemyDeck.transform.position.z), Quaternion.identity);
-            StartCoroutine(Lerp(currentCard,new Vector3(enemyslots[enemySlotId].transform.position.x,enemyslots[enemySlotId].transform.position.y,enemyslots[enemySlotId].transform.position.z - .01f),1f));
+            currentCard.GetComponent<CardObject>().SetUnitId(enemy.id);
+            enemyCards[enemySlotId] = currentCard;
+            enemyCardIds[enemySlotId] = enemy.id;
+            StartCoroutine(Lerp(currentCard,new Vector3(enemyslots[enemySlotId].transform.position.x,enemyslots[enemySlotId].transform.position.y,enemyslots[enemySlotId].transform.position.z - .1f),1f));
             enemySlotId++;
         }
     }
@@ -209,6 +237,7 @@ public class GameManager : MonoBehaviour
     
     public IEnumerator PhaseTextChange(string PhaseName, float FirstWait, String NextText = "",float SecondWait = 0f)
     {
+        transitioning = true;
         PhaseChanged=true;
         PhaseText.text = PhaseName;
         yield return new WaitForSeconds(FirstWait);
@@ -216,6 +245,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(SecondWait);
         PhaseText.text = "";
         //PhaseChanged = false;
+        transitioning = false;
     }
 
     IEnumerator Lerp(GameObject obj,Vector3 end,float duration)
