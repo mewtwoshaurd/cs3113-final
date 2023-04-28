@@ -35,6 +35,7 @@ public class CardObject : MonoBehaviour
 
     UnitType type;
 
+    public int health;
     public TMPro.TextMeshProUGUI _health;
 
     public TMPro.TextMeshProUGUI _attack;
@@ -44,7 +45,7 @@ public class CardObject : MonoBehaviour
 
     public TMPro.TextMeshProUGUI _ability;
 
-    public int attacksPerTurn = 1;
+    public int attacksPerTurn = 4;
 
     public static bool attacking = false;
 
@@ -109,7 +110,7 @@ public class CardObject : MonoBehaviour
                             print("enemyID "+ enemyCardId);
                             enemyCardId = _gm.IsTouchingEnemyCard(touch);
                             if(enemyCardId>-1){
-                                events = Game.AttackUnit(unitId,enemyCardId);
+                                _gm.AttackEvent(unitId,enemyCardId);
                                 print("attacked");
                                 attacksPerTurn--;
                                 print(attacksPerTurn);
@@ -164,6 +165,7 @@ public class CardObject : MonoBehaviour
         type = newtype;
         _mr = GetComponent<Renderer>();
         _health.text = CardDicts.unitHealthDict[newtype].ToString();
+        health = CardDicts.unitHealthDict[newtype];
         _attack.text = CardDicts.unitDamageDict[newtype].ToString();
         var _mrcopy = _mr.materials;
         if(newtype == UnitType.Bat)

@@ -20,9 +20,10 @@ public class GameManager : MonoBehaviour
 
     public GameObject[] enemyslots;
 
-    public GameObject[] enemyCards = new GameObject[3];
+    public GameObject[] enemyCardObjs = new GameObject[5];
 
-    public int[] enemyCardIds = new int[3];
+
+    public int[] enemyCardIds = new int[5];
 
     public GameObject cardPrefab;
 
@@ -54,7 +55,7 @@ public class GameManager : MonoBehaviour
             if (e.eventType == EventType.EncounterStarted)
             {
                 enemies = (List<Card>)e.data[0];
-                print(enemies[0]);
+                print("enemies Count " + enemies.Count);
                 //Debug.Log(enemies);
             }
             if (e.eventType == EventType.HandGiven)
@@ -67,20 +68,6 @@ public class GameManager : MonoBehaviour
 
         GenerateHand(hand);
         GenerateEnemies(enemies);
-        for(int i =0; i<hand.Count;i++){
-            int id = hand[i].id;
-            Game.PlayUnit(id);
-        }
-
-        events = Game.EndPhase();
-        foreach(GameEvent e in events){
-            print(e);
-        }
-
-        events = Game.EndPhase();
-        foreach(GameEvent e in events){
-            print(e);
-        }
 
         // events = Game.AttackUnit(hand[0].id,enemies[0].id);
         // foreach(GameEvent e in events){
@@ -95,16 +82,16 @@ public class GameManager : MonoBehaviour
         //print("phase: " + phaseNum);
         if(phaseNum==0 && !PhaseChanged && !transitioning){
             PhaseButton.text = "NEXT";
-            StartCoroutine(PhaseTextChange("TURN "+turnNum,4f,"CARD PHASE",4f));
+            StartCoroutine(PhaseTextChange("TURN "+turnNum,1.5f,"CARD PHASE",1.5f));
             
         }
         if(phaseNum==1 && !PhaseChanged&& !transitioning){
             PhaseButton.text = "END";
-            StartCoroutine(PhaseTextChange("ATTACK PHASE",4f));
+            StartCoroutine(PhaseTextChange("ATTACK PHASE",1.5f));
         }
         if(phaseNum==2 && !PhaseChanged&& !transitioning){
             PhaseButton.text = "NEXT";
-            StartCoroutine(PhaseTextChange("ENEMY PHASE",4f));
+            StartCoroutine(PhaseTextChange("ENEMY PHASE",1.5f));
             turnNum++; 
         }
 
@@ -112,6 +99,7 @@ public class GameManager : MonoBehaviour
 
     public void IncrementPhase(){
         try{
+            
             events = Game.EndPhase();
             if(phaseNum<2){
                 phaseNum++;
@@ -120,6 +108,7 @@ public class GameManager : MonoBehaviour
                 phaseNum=0;
             }
             PhaseChanged = !PhaseChanged;
+            print("try successful");
         }
         catch(Exception e){
             PhaseText.text = "Play Card to Continue";
@@ -143,6 +132,18 @@ public class GameManager : MonoBehaviour
         return collider.Raycast(_ray, out _hit, 1000.0f);
     }
 
+    public void ChangeEnemyCardsHealth(GameObject card, int deltaHealth){
+        card.GetComponent<CardObject>().health +=deltaHealth;
+        card.GetComponent<CardObject>()._health.text = card.health.ToString();
+    }
+
+
+    public void AttackEvent(int attackedId, int defenderId){
+        events = Game.AttackUnit(attackedId,defenderId);
+        foreach(GameEvent e in events){
+            print(e);
+        }
+    }
     public int IsTouchingPlayerSlot(Touch touch)
     {
         BoxCollider _coll;
@@ -166,9 +167,9 @@ public class GameManager : MonoBehaviour
         BoxCollider _coll;
         GameObject card;
         int cardId = -1;
-        for(int i = 0; i < enemyCards.Length; i++)
+        for(int i = 0; i < enemyCardObjs.Length; i++)
         {
-            card = enemyCards[i];
+            card = enemyCardObjs[i];
             _coll = card.GetComponent<BoxCollider>();
             if(IsTouched(touch, _coll))
             {
@@ -185,12 +186,6 @@ public class GameManager : MonoBehaviour
         
     }
 
-    // public void UpdateGameSlot(int slotid)
-    // {
-    //     events = Game.PlayUnit(slotid);
-    // }
-
-
     void GenerateEnemies(List<Card> enemies){
         int enemySlotId = 0;
         GameObject currentCard;
@@ -198,9 +193,11 @@ public class GameManager : MonoBehaviour
         print(enemyslots.Length);
         foreach(Card enemy in enemies){
             //print("enemy "+ enemySlotId);
-            currentCard = Instantiate(cardPrefab,new Vector3(enemyDeck.transform.position.x,enemyDeck.transform.position.y,enemyDeck.transform.position.z), Quaternion.identity);
+            currentCard = Instantiate(cardPrefab,new Vector3(enemyDeck.transform.position.x,enemyDeck.transform.position.y,enemyDeck.transform.position.z), Quaternion.Euler(0, 0, 180));
             currentCard.GetComponent<CardObject>().SetUnitId(enemy.id);
-            enemyCards[enemySlotId] = currentCard;
+            currentCard.tag = "EnemyCard";
+            currentCard.GetComponent<CardObject>().SetUnitType(enemy.unitType);
+            enemyCardObjs[enemySlotId] = currentCard;
             enemyCardIds[enemySlotId] = enemy.id;
             StartCoroutine(Lerp(currentCard,new Vector3(enemyslots[enemySlotId].transform.position.x,enemyslots[enemySlotId].transform.position.y,enemyslots[enemySlotId].transform.position.z - .1f),1f));
             enemySlotId++;
@@ -222,6 +219,7 @@ public class GameManager : MonoBehaviour
             handslotid += 1;
         }
     }
+
 
     void TakeHand()
     {
