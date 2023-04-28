@@ -225,18 +225,15 @@ public class GameManager : MonoBehaviour
         int cardId = -1;
         for (int i = 0; i < enemyCardObjs.Length; i++)
         {
-            if(enemyCardObjs[i]!=null){
-                card = enemyCardObjs[i];
-                _coll = card.GetComponent<BoxCollider>();
-                if(IsTouched(touch, _coll) && card.tag == "EnemyCard")
-                {
-                    cardId = i;
-                    break;
-                }
+            card = enemyCardObjs[i];
+            _coll = card.GetComponent<BoxCollider>();
+            if(IsTouched(touch, _coll) && card.tag == "EnemyCard")
+            {
+                cardId = card.GetUnitId();
+                break;
             }
         }
         return cardId;
-
     }
 
     public int IsTouchingEnemyCard(Vector3 mousePos)
@@ -250,7 +247,7 @@ public class GameManager : MonoBehaviour
             _coll = card.GetComponent<BoxCollider>();
             if (IsTouched(mousePos, _coll) && card.tag == "EnemyCard")
             {
-                cardId = i;
+                cardId = card.GetUnitId();
                 break;
             }
         }
