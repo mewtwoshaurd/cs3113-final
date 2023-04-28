@@ -229,7 +229,7 @@ public class GameManager : MonoBehaviour
             _coll = card.GetComponent<BoxCollider>();
             if(IsTouched(touch, _coll) && card.tag == "EnemyCard")
             {
-                cardId = card.GetComponent<CardObject>.GetUnitId();
+                cardId = card.GetComponent<CardObject>().GetUnitId();
                 break;
             }
         }
@@ -247,7 +247,7 @@ public class GameManager : MonoBehaviour
             _coll = card.GetComponent<BoxCollider>();
             if (IsTouched(mousePos, _coll) && card.tag == "EnemyCard")
             {
-                cardId = card.GetComponent<CardObject>.GetUnitId();
+                cardId = card.GetComponent<CardObject>().GetUnitId();
                 break;
             }
         }
