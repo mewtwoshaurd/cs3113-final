@@ -22,18 +22,31 @@ public class PhaseButtonClick : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.touchCount > 0)
+        bool isTouching = false;
+        Vector3 touchPos = Vector3.zero;
+#if !UNITY_ANDROID || UNITY_EDITOR
+        if (Input.GetMouseButton(0))
+        {
+            touchPos = Input.mousePosition;
+            isTouching = true;
+        }
+#else
+        if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
-            int id = touch.fingerId;
-            if (touch.phase == TouchPhase.Began){
-                //Debug.Log(EventSystem.current.IsPointerOverGameObject(id));
-                if (_gm.IsTouched(touch,_coll) && (_gm.hasPhaseChanged()) && !(_gm.transitioning)){
-                    //Debug.Log("buttonClicked");
-                    _gm.IncrementPhase();
-                }
+            touchPos = touch.position;
+            isTouching = (touch.phase == TouchPhase.Began);
+        }
+#endif
+
+        if (isTouching)
+        {
+            //Debug.Log(EventSystem.current.IsPointerOverGameObject(id));
+            if (_gm.IsTouched(touchPos, _coll) && (_gm.hasPhaseChanged()) && !(_gm.transitioning))
+            {
+                //Debug.Log("buttonClicked");
+                _gm.IncrementPhase();
             }
-            
         }
     }
 }
