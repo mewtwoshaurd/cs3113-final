@@ -189,8 +189,9 @@ public class GameManager : MonoBehaviour
                     var card = go.GetComponent<CardObject>();
                     if(idToCheck == card.GetUnitId())
                     {
-                        Debug.Log("Found card");
-                        card.UpdateStats((int)e.data[1], (int)e.data[2]);
+                        /*Debug.Log(e.data[3]);
+                        Debug.Log(e.data[4]);*/
+                        card.UpdateStats((int)(e.data[3])-(int)(e.data[1]), (int)(e.data[3])-(int)(e.data[2]));
                     }
                 }
                 foreach(GameObject go in enemycards)
@@ -199,8 +200,9 @@ public class GameManager : MonoBehaviour
                     var card = go.GetComponent<CardObject>();
                     if(idToCheck == card.GetUnitId())
                     {
-                        Debug.Log("Found card");
-                        card.UpdateStats((int)e.data[1], (int)e.data[2]);
+                        /*Debug.Log(e.data[3]);
+                        Debug.Log(e.data[4]);*/
+                        card.UpdateStats((int)(e.data[3])-(int)(e.data[1]), (int)(e.data[4])-(int)(e.data[2]));
                     }
                 }
             }

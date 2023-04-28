@@ -204,7 +204,7 @@ public class CardObject : MonoBehaviour
     public void UpdateStats(int healthChange, int damageChange)
     {
         print("Doing Thing");
-        _health.text += healthChange;
-        _attack.text += damageChange;
+        _health.text = healthChange.ToString();
+        _attack.text = damageChange.ToString();
     }
 }
