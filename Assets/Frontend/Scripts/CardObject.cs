@@ -62,18 +62,18 @@ public class CardObject : MonoBehaviour
     {
         bool isTouching = false;
         Vector3 touchPos = Vector3.zero;
-#if UNITY_ANDROID
+#if !UNITY_ANDROID || UNITY_EDITOR
+        if (Input.GetMouseButton(0))
+        {
+            touchPos = Input.mousePosition;
+            isTouching = true;
+        }
+#else
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
             touchPos = touch.position;
             isTouching = (touch.phase == TouchPhase.Began);
-        }
-#else
-        if (Input.GetMouseButton(0))
-        {
-            touchPos = Input.mousePosition;
-            isTouching = true;
         }
 #endif
 
