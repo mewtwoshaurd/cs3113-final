@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class CardObject : MonoBehaviour
 {
@@ -31,6 +33,14 @@ public class CardObject : MonoBehaviour
     bool inHand = false;
 
     UnitType type;
+
+    public TMPro.TextMeshProUGUI _health;
+
+    public TMPro.TextMeshProUGUI _attack;
+
+    public TMPro.TextMeshProUGUI _name;
+
+    public TMPro.TextMeshProUGUI _ability;
 
     int phaseNum=0;
     void Start()
@@ -125,22 +135,29 @@ public class CardObject : MonoBehaviour
     {
         type = newtype;
         _mr = GetComponent<Renderer>();
+        _health.text = CardDicts.unitHealthDict[newtype].ToString();
+        _attack.text = CardDicts.unitDamageDict[newtype].ToString();
         var _mrcopy = _mr.materials;
         if(newtype == UnitType.Bat)
         {
             _mrcopy[0] = mats[0];
+            _name.text = "Bat";
+            
         }
         else if(newtype == UnitType.Bee)
         {
             _mrcopy[0] = mats[1];
+            _name.text = "Bee";
         }
         else if(newtype == UnitType.Dog)
         {
             _mrcopy[0] = mats[2];
+            _name.text = "Dog";
         }
         else if(newtype == UnitType.Spider)
         {
             _mrcopy[0] = mats[3];
+            _name.text = "Spider";
         }
         _mr.materials = _mrcopy;
     }
