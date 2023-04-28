@@ -96,9 +96,9 @@ public class GameManager : MonoBehaviour
         if(phaseNum==2 && !PhaseChanged){
             PhaseButton.text = "NEXT";
             StartCoroutine(PhaseTextChange("ENEMY PHASE",4f));
+            turnNum++; 
             foreach (Card enemy in enemies){
                 Game.AttackUnit(enemy.id,hand[0].id);   
-                turnNum++; 
             }
         }
 
@@ -120,6 +120,10 @@ public class GameManager : MonoBehaviour
         }
 		
 	}
+
+    public int currentPhase(){
+        return phaseNum;
+    }
 
     public bool hasPhaseChanged(){
         return PhaseChanged;
@@ -160,6 +164,8 @@ public class GameManager : MonoBehaviour
     void GenerateEnemies(List<Card> enemies){
         int enemySlotId = 0;
         GameObject currentCard;
+        print(enemies.Count);
+        print(enemyslots.Length);
         foreach(Card enemy in enemies){
             //print("enemy "+ enemySlotId);
             currentCard = Instantiate(cardPrefab,new Vector3(enemyDeck.transform.position.x,enemyDeck.transform.position.y,enemyDeck.transform.position.z), Quaternion.identity);
@@ -194,7 +200,7 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    IEnumerator PhaseTextChange(string PhaseName, float FirstWait, String NextText = "",float SecondWait = 0f)
+    public IEnumerator PhaseTextChange(string PhaseName, float FirstWait, String NextText = "",float SecondWait = 0f)
     {
         PhaseChanged=true;
         PhaseText.text = PhaseName;

@@ -36,12 +36,10 @@ public class CardObject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0);
-            slotid = _gm.IsTouchingPlayerSlot(touch);
-            phaseNum = _gm.currentPhase();
-            switch(phaseNum){
+        phaseNum = _gm.currentPhase();
+        
+        
+        switch(phaseNum){
             case 0:
                 
                 if(Input.touchCount > 0){
@@ -90,9 +88,7 @@ public class CardObject : MonoBehaviour
             case 2:
                 break;
             }
-            }
-        }   
-        
+        }  
 
     public void SetUnitId(int id)
     {
