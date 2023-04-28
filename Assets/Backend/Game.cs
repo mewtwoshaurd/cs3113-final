@@ -253,7 +253,7 @@ public static partial class Game
             int oldDamage = attacker.damage;
             attacker.damage = Math.Max(1, attacker.damage - 2);
             int damageChange = attacker.damage - oldDamage;
-            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { attacker.id, 0, damageChange } });
+            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { attacker.id, 0, damageChange, attacker.health, attacker.damage } });
         }
 
         // If the defender has the wild ability, swap attack and defense stats as long as its hp isnt already 0
@@ -266,7 +266,7 @@ public static partial class Game
 
             int damageChange = defender.damage - defender.health;
             int healthChange = defender.health - defender.damage;
-            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defender.id, healthChange, damageChange } });
+            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defender.id, healthChange, damageChange, defender.health, defender.damage } });
         }
 
         // If the defender has the bloodsucker ability, heal the defender by 1hp as long as its hp isnt already 0
@@ -274,7 +274,7 @@ public static partial class Game
         {
             events.Add(new GameEvent { eventType = EventType.UnitAbilityActivation, data = new List<object> { defender.id } });
             defender.health++;
-            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defender.id, 1, 0 } });
+            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defender.id, 1, 0, defender.health, defender.damage } });
         }
 
         // If the defender has the spikey ability, deal 1 damage to the attacker
@@ -282,7 +282,7 @@ public static partial class Game
         {
             events.Add(new GameEvent { eventType = EventType.UnitAbilityActivation, data = new List<object> { defender.id } });
             attacker.health--;
-            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { attacker.id, -1, 0 } });
+            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { attacker.id, -1, 0, defender.health, defender.damage } });
             if (attacker.health <= 0)
             {
                 HandleDeath(events, attacker);
@@ -294,7 +294,7 @@ public static partial class Game
         {
             events.Add(new GameEvent { eventType = EventType.UnitAbilityActivation, data = new List<object> { attacker.id } });
             attacker.attacksRemaining--;
-            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { attacker.id, 0, -1 } });
+            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { attacker.id, 0, -1, attacker.health, attacker.damage } });
         }
 
         return events;
@@ -333,13 +333,13 @@ public static partial class Game
             defender.heldItem = null;
         }
         defender.health -= damageDone;
-        events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defender.id, -attacker.damage, 0 } });
+        events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defender.id, -attacker.damage, 0, attacker.health, attacker.damage } });
         // If the defender took a non-zero amount of damage and has more than 0 health remaining and is holding a water, then they recieve +3 health
         if (damageDone > 0 && defender.health > 0 && defender.heldItem != null && defender.heldItem.itemType == ItemType.Water)
         {
             events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { defender.id, defender.heldItem.id } });
             defender.health += 3;
-            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defender.id, 3, 0 } });
+            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defender.id, 3, 0, defender.health, defender.damage } });
             defender.heldItem = null;
         }
 
@@ -368,7 +368,7 @@ public static partial class Game
         {
             events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { unit.id, unit.heldItem.id } });
             unit.health = 1;
-            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { unit.id, 1, 0 } });
+            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { unit.id, 1, 0, unit.health, unit.damage } });
             unit.heldItem = null;
         }
         // otherwise, the unit dies
