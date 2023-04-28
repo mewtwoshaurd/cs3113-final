@@ -33,24 +33,24 @@ public class GameManager : MonoBehaviour
     private bool PhaseChanged = false;
 
     public int turnNum = 1;
-    
+
 
     List<Card> hand = new List<Card>();
     List<GameEvent> events = new List<GameEvent>();
 
-    public UnitType[] currImplemented = new UnitType[] {UnitType.Dog, UnitType.Bee, UnitType.Bat, UnitType.Spider};
+    public UnitType[] currImplemented = new UnitType[] { UnitType.Dog, UnitType.Bee, UnitType.Bat, UnitType.Spider };
     // Start is called before the first frame update
     void Start()
-    {	   
-        UnitType randtype;	   
-        for(int i = 0; i < 20; i++)
+    {
+        UnitType randtype;
+        for (int i = 0; i < 20; i++)
         {
             int rand = UnityEngine.Random.Range(0, 4);
             randtype = currImplemented[rand];
             deck.Add(Card.UnitCard(randtype));
         }
         events = Game.StartEncounter(deck, UnitType.Dog);
-        foreach(GameEvent e in events)
+        foreach (GameEvent e in events)
         {
             if (e.eventType == EventType.EncounterStarted)
             {
@@ -77,50 +77,60 @@ public class GameManager : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {   
+    {
         //print("phaseChanged: " + PhaseChanged);
         //print("phase: " + phaseNum);
-        if(phaseNum==0 && !PhaseChanged && !transitioning){
+        if (phaseNum == 0 && !PhaseChanged && !transitioning)
+        {
             PhaseButton.text = "NEXT";
-            StartCoroutine(PhaseTextChange("TURN "+turnNum,1.5f,"CARD PHASE",1.5f));
-            
+            StartCoroutine(PhaseTextChange("TURN " + turnNum, 1.5f, "CARD PHASE", 1.5f));
+
         }
-        if(phaseNum==1 && !PhaseChanged&& !transitioning){
+        if (phaseNum == 1 && !PhaseChanged && !transitioning)
+        {
             PhaseButton.text = "END";
-            StartCoroutine(PhaseTextChange("ATTACK PHASE",1.5f));
+            StartCoroutine(PhaseTextChange("ATTACK PHASE", 1.5f));
         }
-        if(phaseNum==2 && !PhaseChanged&& !transitioning){
+        if (phaseNum == 2 && !PhaseChanged && !transitioning)
+        {
             PhaseButton.text = "NEXT";
-            StartCoroutine(PhaseTextChange("ENEMY PHASE",1.5f));
-            turnNum++; 
+            StartCoroutine(PhaseTextChange("ENEMY PHASE", 1.5f));
+            turnNum++;
         }
 
     }
 
-    public void IncrementPhase(){
-        try{
-            
+    public void IncrementPhase()
+    {
+        try
+        {
+
             events = Game.EndPhase();
-            if(phaseNum<2){
+            if (phaseNum < 2)
+            {
                 phaseNum++;
             }
-            else{
-                phaseNum=0;
+            else
+            {
+                phaseNum = 0;
             }
             PhaseChanged = !PhaseChanged;
             print("try successful");
         }
-        catch(Exception e){
+        catch (Exception e)
+        {
             PhaseText.text = "Play Card to Continue";
         }
-		
-	}
 
-    public int currentPhase(){
+    }
+
+    public int currentPhase()
+    {
         return phaseNum;
     }
 
-    public bool hasPhaseChanged(){
+    public bool hasPhaseChanged()
+    {
         return PhaseChanged;
     }
 
@@ -132,15 +142,26 @@ public class GameManager : MonoBehaviour
         return collider.Raycast(_ray, out _hit, 1000.0f);
     }
 
-    public void ChangeEnemyCardsHealth(GameObject card, int deltaHealth){
-        card.GetComponent<CardObject>().health +=deltaHealth;
+    public bool IsTouched(Vector3 mousePos, BoxCollider collider)
+    {
+        Ray _ray = Camera.main.ScreenPointToRay(new Vector3(mousePos.x, mousePos.y, 0));
+        RaycastHit _hit;
+
+        return collider.Raycast(_ray, out _hit, 1000.0f);
+    }
+
+    public void ChangeEnemyCardsHealth(GameObject card, int deltaHealth)
+    {
+        card.GetComponent<CardObject>().health += deltaHealth;
         card.GetComponent<CardObject>()._health.text = card.health.ToString();
     }
 
 
-    public void AttackEvent(int attackedId, int defenderId){
-        events = Game.AttackUnit(attackedId,defenderId);
-        foreach(GameEvent e in events){
+    public void AttackEvent(int attackedId, int defenderId)
+    {
+        events = Game.AttackUnit(attackedId, defenderId);
+        foreach (GameEvent e in events)
+        {
             print(e);
         }
     }
@@ -149,11 +170,29 @@ public class GameManager : MonoBehaviour
         BoxCollider _coll;
         GameObject slot;
         int slotid = -1;
-        for(int i = 0; i < playerslots.Length; i++)
+        for (int i = 0; i < playerslots.Length; i++)
         {
             slot = playerslots[i];
             _coll = slot.GetComponent<BoxCollider>();
-            if(IsTouched(touch, _coll))
+            if (IsTouched(touch, _coll))
+            {
+                slotid = i;
+                break;
+            }
+        }
+        return slotid;
+    }
+
+    public int IsTouchingPlayerSlot(Vector3 mousePos)
+    {
+        BoxCollider _coll;
+        GameObject slot;
+        int slotid = -1;
+        for (int i = 0; i < playerslots.Length; i++)
+        {
+            slot = playerslots[i];
+            _coll = slot.GetComponent<BoxCollider>();
+            if (IsTouched(mousePos, _coll))
             {
                 slotid = i;
                 break;
@@ -167,39 +206,69 @@ public class GameManager : MonoBehaviour
         BoxCollider _coll;
         GameObject card;
         int cardId = -1;
-        for(int i = 0; i < enemyCardObjs.Length; i++)
+        for (int i = 0; i < enemyCardObjs.Length; i++)
         {
             card = enemyCardObjs[i];
             _coll = card.GetComponent<BoxCollider>();
-            if(IsTouched(touch, _coll))
+            if (IsTouched(touch, _coll))
             {
                 cardId = i;
                 break;
             }
         }
-        if(cardId>-1){
+        if (cardId > -1)
+        {
             return enemyCardIds[cardId];
         }
-        else{
+        else
+        {
             return -1;
         }
-        
+
     }
 
-    void GenerateEnemies(List<Card> enemies){
+    public int IsTouchingEnemyCard(Vector3 mousePos)
+    {
+        BoxCollider _coll;
+        GameObject card;
+        int cardId = -1;
+        for (int i = 0; i < enemyCardObjs.Length; i++)
+        {
+            card = enemyCardObjs[i];
+            _coll = card.GetComponent<BoxCollider>();
+            if (IsTouched(mousePos, _coll))
+            {
+                cardId = i;
+                break;
+            }
+        }
+
+        if (cardId > -1)
+        {
+            return enemyCardIds[cardId];
+        }
+        else
+        {
+            return -1;
+        }
+    }
+
+    void GenerateEnemies(List<Card> enemies)
+    {
         int enemySlotId = 0;
         GameObject currentCard;
         print(enemies.Count);
         print(enemyslots.Length);
-        foreach(Card enemy in enemies){
+        foreach (Card enemy in enemies)
+        {
             //print("enemy "+ enemySlotId);
-            currentCard = Instantiate(cardPrefab,new Vector3(enemyDeck.transform.position.x,enemyDeck.transform.position.y,enemyDeck.transform.position.z), Quaternion.Euler(0, 0, 180));
+            currentCard = Instantiate(cardPrefab, new Vector3(enemyDeck.transform.position.x, enemyDeck.transform.position.y, enemyDeck.transform.position.z), Quaternion.Euler(0, 0, 180));
             currentCard.GetComponent<CardObject>().SetUnitId(enemy.id);
             currentCard.tag = "EnemyCard";
             currentCard.GetComponent<CardObject>().SetUnitType(enemy.unitType);
             enemyCardObjs[enemySlotId] = currentCard;
             enemyCardIds[enemySlotId] = enemy.id;
-            StartCoroutine(Lerp(currentCard,new Vector3(enemyslots[enemySlotId].transform.position.x,enemyslots[enemySlotId].transform.position.y,enemyslots[enemySlotId].transform.position.z - .1f),1f));
+            StartCoroutine(Lerp(currentCard, new Vector3(enemyslots[enemySlotId].transform.position.x, enemyslots[enemySlotId].transform.position.y, enemyslots[enemySlotId].transform.position.z - .1f), 1f));
             enemySlotId++;
         }
     }
@@ -215,7 +284,7 @@ public class GameManager : MonoBehaviour
             currentCard.GetComponent<CardObject>().SetInHand(true);
             Debug.Log(c.unitType);
             currentCard.GetComponent<CardObject>().SetUnitType(c.unitType);
-            StartCoroutine(Lerp(currentCard,new Vector3(handslots[handslotid].transform.position.x,handslots[handslotid].transform.position.y,handslots[handslotid].transform.position.z - .01f),1f));
+            StartCoroutine(Lerp(currentCard, new Vector3(handslots[handslotid].transform.position.x, handslots[handslotid].transform.position.y, handslots[handslotid].transform.position.z - .01f), 1f));
             handslotid += 1;
         }
     }
@@ -226,17 +295,17 @@ public class GameManager : MonoBehaviour
         GameObject[] inHand = GameObject.FindGameObjectsWithTag("PlayerCard");
         foreach (GameObject c in inHand)
         {
-            if(c.GetComponent<CardObject>().GetInHand())
+            if (c.GetComponent<CardObject>().GetInHand())
             {
                 Destroy(c);
             }
         }
     }
-    
-    public IEnumerator PhaseTextChange(string PhaseName, float FirstWait, String NextText = "",float SecondWait = 0f)
+
+    public IEnumerator PhaseTextChange(string PhaseName, float FirstWait, String NextText = "", float SecondWait = 0f)
     {
         transitioning = true;
-        PhaseChanged=true;
+        PhaseChanged = true;
         PhaseText.text = PhaseName;
         yield return new WaitForSeconds(FirstWait);
         PhaseText.text = NextText;
@@ -246,10 +315,10 @@ public class GameManager : MonoBehaviour
         transitioning = false;
     }
 
-    IEnumerator Lerp(GameObject obj,Vector3 end,float duration)
+    IEnumerator Lerp(GameObject obj, Vector3 end, float duration)
     {
         float time = 0;
-        Vector3 start = obj.transform.position;  
+        Vector3 start = obj.transform.position;
         while (time < duration)
         {
             obj.transform.position = Vector3.Lerp(start, end, time / duration);
