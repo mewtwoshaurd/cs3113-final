@@ -24,6 +24,8 @@ public class CardObject : MonoBehaviour
 
     int slotid = -1;
 
+    bool inHand = false;
+
     int phaseNum=0;
     void Start()
     {
@@ -35,10 +37,11 @@ public class CardObject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-            //Debug.Log("Touch Input");
+        if(Input.touchCount > 0)
+        {
             Touch touch = Input.GetTouch(0);
             slotid = _gm.IsTouchingPlayerSlot(touch);
-        switch(phaseNum){
+            switch(phaseNum){
             case 0:
                 if (touch.phase == TouchPhase.Began && (_gm.IsTouched(touch, _coll) && !isPlayed)){
                     //Debug.Log("selected!");
@@ -64,17 +67,19 @@ public class CardObject : MonoBehaviour
                 if(Input.touchCount > 0)
                 {
                     //Debug.Log("Touch Input");
-                    Touch touch = Input.GetTouch(0);
+                    touch = Input.GetTouch(0);
                     slotid = _gm.IsTouchingPlayerSlot(touch);
                 }
                 break;
             case 2:
                 break;
-        }
+            }
+        }   
+        
         
 
     }
-/*
+
     public void SetUnitId(int id)
     {
         unitId = id;
@@ -83,5 +88,15 @@ public class CardObject : MonoBehaviour
     public int GetUnitId()
     {
         return unitId;
-    }*/
+    }
+
+    public void SetInHand(bool hand)
+    {
+        inHand = hand;
+    }
+
+    public bool GetInHand()
+    {
+        return inHand;
+    }
 }

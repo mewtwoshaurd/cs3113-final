@@ -82,8 +82,6 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {   
-        
-        
         //print("phaseChanged: " + PhaseChanged);
         //print("phase: " + phaseNum);
         if(phaseNum==0 && !PhaseChanged){
@@ -103,8 +101,6 @@ public class GameManager : MonoBehaviour
                 turnNum++; 
             }
         }
-
-        
 
     }
 
@@ -177,9 +173,24 @@ public class GameManager : MonoBehaviour
         GameObject currentCard;
         foreach (Card c in hand)
         {
-            currentCard = Instantiate(cardPrefab, handslots[handslotid].transform.position, Quaternion.identity);
-            //currentCard.SetUnitId(c.id);
+            currentCard = Instantiate(cardPrefab, new Vector3(handslots[handslotid].transform.position.x, handslots[handslotid].transform.position.y, handslots[handslotid].transform.position.z), Quaternion.identity);
+            currentCard.GetComponent<CardObject>().SetUnitId(c.id);
+            currentCard.tag = "PlayerCard";
+            currentCard.GetComponent<CardObject>().SetInHand(true);
+            StartCoroutine(Lerp(currentCard,new Vector3(handslots[handslotid].transform.position.x,handslots[handslotid].transform.position.y,handslots[handslotid].transform.position.z - .01f),1f));
             handslotid += 1;
+        }
+    }
+
+    void TakeHand()
+    {
+        GameObject[] inHand = GameObject.FindGameObjectsWithTag("PlayerCard");
+        foreach (GameObject c in inHand)
+        {
+            if(c.GetComponent<CardObject>().GetInHand())
+            {
+                Destroy(c);
+            }
         }
     }
     
@@ -191,7 +202,7 @@ public class GameManager : MonoBehaviour
         PhaseText.text = NextText;
         yield return new WaitForSeconds(SecondWait);
         PhaseText.text = "";
-
+        //PhaseChanged = false;
     }
 
     IEnumerator Lerp(GameObject obj,Vector3 end,float duration)
