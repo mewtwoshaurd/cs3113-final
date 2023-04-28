@@ -274,7 +274,7 @@ public class GameManager : MonoBehaviour
         foreach (Card enemy in enemies)
         {
             //print("enemy "+ enemySlotId);
-            currentCard = Instantiate(enemyPrefab, new Vector3(enemyslots[enemySlotId].transform.position.x, enemyslots[enemySlotId].transform.position.y, enemyslots[enemySlotId].transform.position.z), Quaternion.identity); 
+            currentCard = Instantiate(enemyPrefab, new Vector3(enemyslots[enemySlotId].transform.position.x, enemyslots[enemySlotId].transform.position.y, enemyslots[enemySlotId].transform.position.z), Quaternion.Euler(0,0,180)); 
             Debug.Log(enemy.id);
             Debug.Log(currentCard);
             currentCard.GetComponent<CardObject>().SetUnitId(enemy.id);
