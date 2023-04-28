@@ -29,7 +29,7 @@ public class CardObject : MonoBehaviour
     bool isPlayed = false;
 
     int slotid = -1;
-    int enemyCardId = -1;
+    int enemyCardSlot = -1;
 
     bool inHand = false;
 
@@ -142,6 +142,7 @@ public class CardObject : MonoBehaviour
                     }
                 }
                 break;
+            
             case 2:
                 attacksPerTurn = 1;
                 break;

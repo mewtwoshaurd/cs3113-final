@@ -15,15 +15,14 @@ public class GameManager : MonoBehaviour
 
     public GameObject[] handslots;
 
+    public GameObject enemyPrefab;
+
     public TMPro.TextMeshPro PhaseButton;
     public TMPro.TextMeshProUGUI PhaseText;
 
     public GameObject[] enemyslots;
 
     public GameObject[] enemyCardObjs = new GameObject[5];
-
-
-    public int[] enemyCardIds = new int[5];
 
     public GameObject cardPrefab;
 
@@ -159,12 +158,16 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public void AttackEvent(int attackedId, int defenderId)
+    public void AttackEvent(int attackedId, int defenderSlot)
     {
-        events = Game.AttackUnit(attackedId, defenderId);
+        print("enemyid " + enemyCardObjs[defenderSlot].GetComponent<CardObject>().unitId);
+        events = Game.AttackUnit(attackedId, enemyCardObjs[defenderSlot].GetComponent<CardObject>().unitId);
         foreach (GameEvent e in events)
         {
             print(e);
+            if(e.eventType==EventType.UnitStatChanged){
+                print("e.data " + e.data);
+            }
         }
     }
     public int IsTouchingPlayerSlot(Touch touch)
@@ -210,22 +213,18 @@ public class GameManager : MonoBehaviour
         int cardId = -1;
         for (int i = 0; i < enemyCardObjs.Length; i++)
         {
-            card = enemyCardObjs[i];
-            _coll = card.GetComponent<BoxCollider>();
-            if (IsTouched(touch, _coll))
-            {
-                cardId = i;
-                break;
+            if(enemyCardObjs[i]!=null){
+                card = enemyCardObjs[i];
+                _coll = card.GetComponent<BoxCollider>();
+                if(IsTouched(touch, _coll))
+                {
+                    cardId = i;
+                    break;
+                }
             }
+            
         }
-        if (cardId > -1)
-        {
-            return enemyCardIds[cardId];
-        }
-        else
-        {
-            return -1;
-        }
+        return cardId;
 
     }
 
@@ -247,7 +246,7 @@ public class GameManager : MonoBehaviour
 
         if (cardId > -1)
         {
-            return enemyCardIds[cardId];
+            return cardId;
         }
         else
         {
@@ -264,12 +263,11 @@ public class GameManager : MonoBehaviour
         foreach (Card enemy in enemies)
         {
             //print("enemy "+ enemySlotId);
-            currentCard = Instantiate(cardPrefab, new Vector3(enemyDeck.transform.position.x, enemyDeck.transform.position.y, enemyDeck.transform.position.z), Quaternion.Euler(0, 0, 180));
+            currentCard = Instantiate(enemyPrefab, enemyDeck.transform.position,Quaternion.Euler(0, 0, 180)); 
             currentCard.GetComponent<CardObject>().SetUnitId(enemy.id);
             currentCard.tag = "EnemyCard";
             currentCard.GetComponent<CardObject>().SetUnitType(enemy.unitType);
             enemyCardObjs[enemySlotId] = currentCard;
-            enemyCardIds[enemySlotId] = enemy.id;
             StartCoroutine(Lerp(currentCard, new Vector3(enemyslots[enemySlotId].transform.position.x, enemyslots[enemySlotId].transform.position.y, enemyslots[enemySlotId].transform.position.z - .1f), 1f));
             enemySlotId++;
         }
