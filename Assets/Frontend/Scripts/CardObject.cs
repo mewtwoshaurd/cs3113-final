@@ -36,16 +36,18 @@ public class CardObject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        phaseNum = _gm.currentPhase();
-        
-        
-        switch(phaseNum){
+        if(Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+            slotid = _gm.IsTouchingPlayerSlot(touch);
+            phaseNum = _gm.currentPhase();
+            switch(phaseNum){
             case 0:
                 
                 if(Input.touchCount > 0){
-                    Touch touch0 = Input.GetTouch(0);
-                    slotid = _gm.IsTouchingPlayerSlot(touch0);
-                    if (touch0.phase == TouchPhase.Began && (_gm.IsTouched(touch0, _coll) && !isPlayed)){
+                    touch = Input.GetTouch(0);
+                    slotid = _gm.IsTouchingPlayerSlot(touch);
+                    if (touch0.phase == TouchPhase.Began && (_gm.IsTouched(touch, _coll) && !isPlayed)){
                         //Debug.Log("selected!");
                         isSelected = true;
                     }
@@ -59,7 +61,7 @@ public class CardObject : MonoBehaviour
                         isPlayed = true;
                         //_gm.UpdateGameSlot(slotid);
                     }
-                    else if (touch0.phase == TouchPhase.Began && !(_gm.IsTouched(touch0, _coll)) &&!isPlayed)
+                    else if (touch0.phase == TouchPhase.Began && !(_gm.IsTouched(touch, _coll)) &&!isPlayed)
                     {
                         //Debug.Log("unselected!");
                         isSelected = false;
@@ -71,15 +73,15 @@ public class CardObject : MonoBehaviour
                 isSelected = false;
                 if(Input.touchCount > 0)
                 {
-                    Touch touch1 = Input.GetTouch(0);
-                    slotid = _gm.IsTouchingPlayerSlot(touch1);
-                    if (touch1.phase == TouchPhase.Began && (_gm.IsTouched(touch1, _coll) && !isPlayed)){
+                    touch = Input.GetTouch(0);
+                    slotid = _gm.IsTouchingPlayerSlot(touch);
+                    if (touch.phase == TouchPhase.Began && (_gm.IsTouched(touch, _coll) && !isPlayed)){
                         isSelected = true;
                         StartCoroutine(_gm.PhaseTextChange("pick an enemy to attack",1f));
                     }
-                    if(touch1.phase == TouchPhase.Began && isSelected){
-                        touch1 = Input.GetTouch(0);
-                        slotid = _gm.IsTouchingPlayerSlot(touch1);
+                    if(touch.phase == TouchPhase.Began && isSelected){
+                        touch = Input.GetTouch(0);
+                        slotid = _gm.IsTouchingPlayerSlot(touch);
                         print(slotid); 
                     }
 
@@ -88,6 +90,8 @@ public class CardObject : MonoBehaviour
             case 2:
                 break;
             }
+        }
+        
         }  
 
     public void SetUnitId(int id)
