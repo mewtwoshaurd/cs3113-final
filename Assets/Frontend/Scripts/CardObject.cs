@@ -38,6 +38,7 @@ public class CardObject : MonoBehaviour
             //Debug.Log("Touch Input");
             Touch touch = Input.GetTouch(0);
             slotid = _gm.IsTouchingPlayerSlot(touch);
+            //play phase start
             if (touch.phase == TouchPhase.Began && (_gm.IsTouched(touch, _coll) && !isPlayed))
             {
                 //Debug.Log("selected!");
@@ -58,6 +59,7 @@ public class CardObject : MonoBehaviour
                 //Debug.Log("unselected!");
                 isSelected = false;
             }
+            //play phase ended
         }
 
     }
