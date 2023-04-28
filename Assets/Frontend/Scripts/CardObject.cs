@@ -125,6 +125,7 @@ public class CardObject : MonoBehaviour
                     if (enemyCardId >= 0)
                     {
                         _gm.AttackEvent(unitId, enemyCardId);
+                        //_gm.AttackResults(events);
                         print("attacked");
                         //attacksPerTurn--;
                         //print(attacksPerTurn);
@@ -198,5 +199,12 @@ public class CardObject : MonoBehaviour
             _name.text = "Spider";
         }
         _mr.materials = _mrcopy;
+    }
+
+    public void UpdateStats(int healthChange, int damageChange)
+    {
+        print("Doing Thing");
+        _health.text += healthChange;
+        _attack.text += damageChange;
     }
 }

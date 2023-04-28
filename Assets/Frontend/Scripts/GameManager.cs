@@ -59,9 +59,9 @@ public class GameManager : MonoBehaviour
             if (e.eventType == EventType.EncounterStarted)
             {
                 enemies = (List<Card>)e.data[0];
-                print("enemies Count " + enemies.Count);
+                //print("enemies Count " + enemies.Count);
                 foreach(Card en in enemies){
-                    print("Enemy id " + en.id);
+                    //print("Enemy id " + en.id);
                 }
                 //Debug.Log(enemies);
             }
@@ -69,10 +69,10 @@ public class GameManager : MonoBehaviour
             {
                 hand = (List<Card>)e.data[0];
                 foreach(Card card in hand){
-                    print("player id " + card.id);
+                    //print("player id " + card.id);
                 }
             }
-            print(e);
+            //print(e);
         }
 
         GenerateHand(hand);
@@ -124,12 +124,12 @@ public class GameManager : MonoBehaviour
                 phaseNum = 0;
             }
             PhaseChanged = !PhaseChanged;
-            print("try successful");
+            //print("try successful");
         }
         catch (Exception e)
         {
             PhaseText.text = "Play Card to Continue";
-            print(e.Message);
+            //print(e.Message);
         }
 
     }
@@ -170,16 +170,68 @@ public class GameManager : MonoBehaviour
 
     public void AttackEvent(int attackerId, int defenderSlot)
     {
-        print("slot id :" + attackerId);
-        print("defenderslot :" + defenderSlot);
+        //print("slot id :" + attackerId);
+        //print("defenderslot :" + defenderSlot);
+        GameObject[] playercards = GameObject.FindGameObjectsWithTag("PlayerCard");
+        GameObject[] enemycards = GameObject.FindGameObjectsWithTag("EnemyCard");
         events = Game.AttackUnit(attackerId,defenderSlot);
+        //Debug.Log(events);
         foreach (GameEvent e in events)
         {
-            print(e);
-            if(e.eventType==EventType.UnitStatChanged){
-                print("e.data " + e.data);
+            //Debug.Log(e.eventType);
+            if(e.eventType==EventType.UnitStatChanged)
+            {
+                //Debug.Log("Changing Stats");
+                int idToCheck = (int)e.data[0];
+                foreach(GameObject go in playercards)
+                {
+                    //Debug.Log("Selected Stats to Change");
+                    var card = go.GetComponent<CardObject>();
+                    if(idToCheck == card.GetUnitId())
+                    {
+                        Debug.Log("Found card");
+                        card.UpdateStats((int)e.data[1], (int)e.data[2]);
+                    }
+                }
+                foreach(GameObject go in enemycards)
+                {
+                    //Debug.Log("Selected Stats to Change");
+                    var card = go.GetComponent<CardObject>();
+                    if(idToCheck == card.GetUnitId())
+                    {
+                        Debug.Log("Found card");
+                        card.UpdateStats((int)e.data[1], (int)e.data[2]);
+                    }
+                }
+            }
+            if(e.eventType == EventType.UnitDied)
+            {
+                int idToCheck = (int)e.data[0];
+                foreach(GameObject go in playercards)
+                {
+                    var card = go.GetComponent<CardObject>();
+                    if(idToCheck == card.GetUnitId())
+                    {
+                        Destroy(card);
+                    }
+                }
+                foreach(GameObject go in enemycards)
+                {
+                    //Debug.Log("Selected Stats to Change");
+                    var card = go.GetComponent<CardObject>();
+                    if(idToCheck == card.GetUnitId())
+                    {
+                        Debug.Log("Found card");
+                        card.UpdateStats((int)e.data[1], (int)e.data[2]);
+                    }
+                }
+            }
+            if(e.eventType == EventType.EncounterEnded)
+            {
+                Debug.Log("joever");
             }
         }
+        events = Game.EndPhase();
     }
     public int IsTouchingPlayerSlot(Touch touch)
     {
@@ -275,10 +327,10 @@ public class GameManager : MonoBehaviour
         {
             //print("enemy "+ enemySlotId);
             currentCard = Instantiate(enemyPrefab, new Vector3(enemyslots[enemySlotId].transform.position.x, enemyslots[enemySlotId].transform.position.y, enemyslots[enemySlotId].transform.position.z), Quaternion.Euler(0,0,180)); 
-            Debug.Log(enemy.id);
-            Debug.Log(currentCard);
+            //Debug.Log(enemy.id);
+            //Debug.Log(currentCard);
             currentCard.GetComponent<CardObject>().SetUnitId(enemy.id);
-            print("enemy cardobj id: "+currentCard.GetComponent<CardObject>().unitId);
+            //print("enemy cardobj id: "+currentCard.GetComponent<CardObject>().unitId);
             currentCard.tag = "EnemyCard";
             currentCard.GetComponent<CardObject>().SetUnitType(enemy.unitType);
             enemyCardObjs[enemySlotId] = currentCard;
@@ -297,7 +349,7 @@ public class GameManager : MonoBehaviour
             print("cardobj id: "+c.id);
             currentCard.tag = "PlayerCard";
             currentCard.GetComponent<CardObject>().SetInHand(true);
-            Debug.Log(c.unitType);
+            //Debug.Log(c.unitType);
             currentCard.GetComponent<CardObject>().SetUnitType(c.unitType);
             StartCoroutine(Lerp(currentCard, new Vector3(handslots[handslotid].transform.position.x, handslots[handslotid].transform.position.y, handslots[handslotid].transform.position.z - .01f), 1f));
             handslotid += 1;
