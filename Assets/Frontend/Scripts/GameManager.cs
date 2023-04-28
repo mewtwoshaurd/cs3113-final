@@ -134,7 +134,7 @@ public class GameManager : MonoBehaviour
 
     public void ChangeEnemyCardsHealth(GameObject card, int deltaHealth){
         card.GetComponent<CardObject>().health +=deltaHealth;
-        card.GetComponent<CardObject>()._health.text = card.health.ToString();
+        card.GetComponent<CardObject>()._health.text = card.GetComponent<CardObject>().health.ToString();
     }
 
 
