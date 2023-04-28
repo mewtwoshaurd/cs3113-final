@@ -142,6 +142,7 @@ public class GameManager : MonoBehaviour
         return collider.Raycast(_ray, out _hit, 1000.0f);
     }
 
+
     public bool IsTouched(Vector3 mousePos, BoxCollider collider)
     {
         Ray _ray = Camera.main.ScreenPointToRay(new Vector3(mousePos.x, mousePos.y, 0));
@@ -153,7 +154,7 @@ public class GameManager : MonoBehaviour
     public void ChangeEnemyCardsHealth(GameObject card, int deltaHealth)
     {
         card.GetComponent<CardObject>().health += deltaHealth;
-        card.GetComponent<CardObject>()._health.text = card.health.ToString();
+        card.GetComponent<CardObject>()._health.text = card.GetComponent<CardObject>().health.ToString();
     }
 
 
