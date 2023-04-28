@@ -172,8 +172,7 @@ public class GameManager : MonoBehaviour
     {
         print("slot id :" + attackerId);
         print("defenderslot :" + defenderSlot);
-        print("enemyId:" + enemyCardObjs[defenderSlot].GetComponent<CardObject>().unitId);
-        events = Game.AttackUnit(enemyCardObjs[defenderSlot].GetComponent<CardObject>().unitId,attackerId);
+        events = Game.AttackUnit(attackerId,defenderSlot);
         foreach (GameEvent e in events)
         {
             print(e);
@@ -225,12 +224,14 @@ public class GameManager : MonoBehaviour
         int cardId = -1;
         for (int i = 0; i < enemyCardObjs.Length; i++)
         {
-            card = enemyCardObjs[i];
-            _coll = card.GetComponent<BoxCollider>();
-            if(IsTouched(touch, _coll) && card.tag == "EnemyCard")
-            {
-                cardId = card.GetComponent<CardObject>().GetUnitId();
-                break;
+            if(enemyCardObjs[i]!=null){
+                card = enemyCardObjs[i];
+                _coll = card.GetComponent<BoxCollider>();
+                if(IsTouched(touch, _coll) && card.tag == "EnemyCard")
+                {
+                    cardId = card.GetComponent<CardObject>().GetUnitId();
+                    break;
+                }
             }
         }
         return cardId;
@@ -243,12 +244,14 @@ public class GameManager : MonoBehaviour
         int cardId = -1;
         for (int i = 0; i < enemyCardObjs.Length; i++)
         {
-            card = enemyCardObjs[i];
-            _coll = card.GetComponent<BoxCollider>();
-            if (IsTouched(mousePos, _coll) && card.tag == "EnemyCard")
-            {
-                cardId = card.GetComponent<CardObject>().GetUnitId();
-                break;
+            if(enemyCardObjs[i]!=null){
+                card = enemyCardObjs[i];
+                _coll = card.GetComponent<BoxCollider>();
+                if (IsTouched(mousePos, _coll) && card.tag == "EnemyCard")
+                {
+                    cardId = card.GetComponent<CardObject>().GetUnitId();
+                    break;
+                }
             }
         }
 

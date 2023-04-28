@@ -99,6 +99,7 @@ public class CardObject : MonoBehaviour
                     transform.position = newPos;
                     isSelected = false;
                     isPlayed = true;
+                    Game.PlayUnit(unitId);
                     _gm.UpdateGameSlot(slotid, isPlayed);
                 }
                 else if (isTouching && !(_gm.IsTouched(touchPos, _coll)) && !isPlayed)
