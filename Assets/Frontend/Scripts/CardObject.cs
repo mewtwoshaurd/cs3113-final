@@ -107,17 +107,15 @@ public class CardObject : MonoBehaviour
                             print("picking enemy");
                             touch = Input.GetTouch(0);
                             print("enemyID "+ enemyCardId);
-                            while(enemyCardId==-1){
-                                enemyCardId = _gm.IsTouchingEnemyCard(touch);
-                                if(enemyCardId>-1){
-                                    event = Game.AttackUnit(unitId,enemyCardId);
-                                    print("attacked");
-                                    attacksPerTurn--;
-                                    print(attacksPerTurn);
-                                    attacking = false;
-                                }
-                                isSelected = false;
+                            enemyCardId = _gm.IsTouchingEnemyCard(touch);
+                            if(enemyCardId>-1){
+                                events = Game.AttackUnit(unitId,enemyCardId);
+                                print("attacked");
+                                attacksPerTurn--;
+                                print(attacksPerTurn);
+                                attacking = false;
                             }
+                            isSelected = false;
                             
                         }
                         
