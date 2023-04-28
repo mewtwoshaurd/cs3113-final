@@ -118,7 +118,7 @@ public class CardObject : MonoBehaviour
                 }*/
                 if (isTouching && !(_gm.IsTouched(touchPos, _coll)) && isSelected && attacksPerTurn != 0)
                 {
-                    print("picking enemy");
+                    print("playerid " + unitId);
                     enemyCardId = _gm.IsTouchingEnemyCard(touchPos);
                     print("enemyID " + enemyCardId);
                     if (enemyCardId >= 0)
@@ -132,7 +132,7 @@ public class CardObject : MonoBehaviour
                     isSelected = false;
                 }
 
-                else if (isTouching && (_gm.IsTouched(touchPos, _coll)) && attacksPerTurn != 0 && !attacking)
+                else if (isTouching && (_gm.IsTouched(touchPos, _coll)) && attacksPerTurn != 0 && !attacking && !isSelected)
                 {
                     isSelected = true;
                     StartCoroutine(_gm.PhaseTextChange("pick an enemy to attack", 1f));

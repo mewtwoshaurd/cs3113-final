@@ -60,12 +60,17 @@ public class GameManager : MonoBehaviour
             {
                 enemies = (List<Card>)e.data[0];
                 print("enemies Count " + enemies.Count);
+                foreach(Card en in enemies){
+                    print("Enemy id " + en.id);
+                }
                 //Debug.Log(enemies);
             }
             if (e.eventType == EventType.HandGiven)
             {
                 hand = (List<Card>)e.data[0];
-                Debug.Log(hand[0].unitType);
+                foreach(Card card in hand){
+                    print("player id " + card.id);
+                }
             }
             print(e);
         }
@@ -163,10 +168,12 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public void AttackEvent(int attackedId, int defenderSlot)
+    public void AttackEvent(int attackerId, int defenderSlot)
     {
-        print("enemyid " + enemyCardObjs[defenderSlot].GetComponent<CardObject>().unitId);
-        events = Game.AttackUnit(attackedId, enemyCardObjs[defenderSlot].GetComponent<CardObject>().unitId);
+        print("slot id :" + attackerId);
+        print("defenderslot :" + defenderSlot);
+        print("enemyId:" + enemyCardObjs[defenderSlot].GetComponent<CardObject>().unitId);
+        events = Game.AttackUnit(enemyCardObjs[defenderSlot].GetComponent<CardObject>().unitId,attackerId);
         foreach (GameEvent e in events)
         {
             print(e);
@@ -271,6 +278,7 @@ public class GameManager : MonoBehaviour
             Debug.Log(enemy.id);
             Debug.Log(currentCard);
             currentCard.GetComponent<CardObject>().SetUnitId(enemy.id);
+            print("enemy cardobj id: "+currentCard.GetComponent<CardObject>().unitId);
             currentCard.tag = "EnemyCard";
             currentCard.GetComponent<CardObject>().SetUnitType(enemy.unitType);
             enemyCardObjs[enemySlotId] = currentCard;
@@ -286,6 +294,7 @@ public class GameManager : MonoBehaviour
         {
             currentCard = Instantiate(cardPrefab, new Vector3(handslots[handslotid].transform.position.x, handslots[handslotid].transform.position.y, handslots[handslotid].transform.position.z), Quaternion.Euler(0, 0, 180));
             currentCard.GetComponent<CardObject>().SetUnitId(c.id);
+            print("cardobj id: "+c.id);
             currentCard.tag = "PlayerCard";
             currentCard.GetComponent<CardObject>().SetInHand(true);
             Debug.Log(c.unitType);
