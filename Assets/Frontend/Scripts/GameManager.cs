@@ -33,12 +33,17 @@ public class GameManager : MonoBehaviour
 
     List<Card> hand = new List<Card>();
     List<GameEvent> events = new List<GameEvent>();
+
+    public UnitType[] currImplemented = new UnitType[] {UnitType.Dog, UnitType.Bee, UnitType.Bat, UnitType.Spider};
     // Start is called before the first frame update
     void Start()
-    {	   
+    {
+        UnitType randtype;	   
         for(int i = 0; i < 20; i++)
         {
-            deck.Add(Card.UnitCard(UnitType.Dog));
+            int rand = UnityEngine.Random.Range(0, 4);
+            randtype = currImplemented[rand];
+            deck.Add(Card.UnitCard(randtype));
         }
         events = Game.StartEncounter(deck, UnitType.Dog);
         foreach(GameEvent e in events)
@@ -51,7 +56,7 @@ public class GameManager : MonoBehaviour
             if (e.eventType == EventType.HandGiven)
             {
                 hand = (List<Card>)e.data[0];
-                //Debug.Log(hand);
+                Debug.Log(hand[0].unitType);
             }
             print(e);
         }
@@ -173,10 +178,12 @@ public class GameManager : MonoBehaviour
         GameObject currentCard;
         foreach (Card c in hand)
         {
-            currentCard = Instantiate(cardPrefab, new Vector3(handslots[handslotid].transform.position.x, handslots[handslotid].transform.position.y, handslots[handslotid].transform.position.z), Quaternion.identity);
+            currentCard = Instantiate(cardPrefab, new Vector3(handslots[handslotid].transform.position.x, handslots[handslotid].transform.position.y, handslots[handslotid].transform.position.z), Quaternion.Euler(0, 0, 180));
             currentCard.GetComponent<CardObject>().SetUnitId(c.id);
             currentCard.tag = "PlayerCard";
             currentCard.GetComponent<CardObject>().SetInHand(true);
+            Debug.Log(c.unitType);
+            currentCard.GetComponent<CardObject>().SetUnitType(c.unitType);
             StartCoroutine(Lerp(currentCard,new Vector3(handslots[handslotid].transform.position.x,handslots[handslotid].transform.position.y,handslots[handslotid].transform.position.z - .01f),1f));
             handslotid += 1;
         }

@@ -64,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 42528977add13a747bf612ccaa16a7ab, type: 2}
+  - {fileID: 2100000, guid: c1e310fa674bee2409dd9458897c6ef8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -131,3 +131,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   cardOffset: -0.1
+  mats:
+  - {fileID: 2100000, guid: c1e310fa674bee2409dd9458897c6ef8, type: 2}
+  - {fileID: 2100000, guid: 4efc9eabca2971b4fadaf4c9fa97b92e, type: 2}
+  - {fileID: 2100000, guid: 5ae74741161389d4dba94d3ab9e19e38, type: 2}
+  - {fileID: 2100000, guid: 9cf2fb8fa33025d4395287fbbdd59c2e, type: 2}

@@ -10,9 +10,13 @@ public class CardObject : MonoBehaviour
     public LayerMask targetLayer;
 
     BoxCollider _coll;
+
+    Renderer _mr;
     //public float speed = 1;
     //public float maxSpeed = 10;
     public float cardOffset = -0.1f;
+
+    public Material[] mats;
 
     GameManager _gm;
 
@@ -25,6 +29,8 @@ public class CardObject : MonoBehaviour
     int slotid = -1;
 
     bool inHand = false;
+
+    UnitType type;
 
     int phaseNum=0;
     void Start()
@@ -98,5 +104,29 @@ public class CardObject : MonoBehaviour
     public bool GetInHand()
     {
         return inHand;
+    }
+
+    public void SetUnitType(UnitType newtype)
+    {
+        type = newtype;
+        _mr = GetComponent<Renderer>();
+        var _mrcopy = _mr.materials;
+        if(newtype == UnitType.Bat)
+        {
+            _mrcopy[0] = mats[0];
+        }
+        else if(newtype == UnitType.Bee)
+        {
+            _mrcopy[0] = mats[1];
+        }
+        else if(newtype == UnitType.Dog)
+        {
+            _mrcopy[0] = mats[2];
+        }
+        else if(newtype == UnitType.Spider)
+        {
+            _mrcopy[0] = mats[3];
+        }
+        _mr.materials = _mrcopy;
     }
 }
