@@ -1376,6 +1376,7 @@ MonoBehaviour:
   - {fileID: 594020183}
   - {fileID: 1092510115}
   - {fileID: 879938767}
+  enemyPrefab: {fileID: 8428957275887220421, guid: 1c422f21b059ba741b6c145e61b8028a, type: 3}
   PhaseButton: {fileID: 2116959389}
   PhaseText: {fileID: 1913185114}
   enemyslots:
@@ -1390,7 +1391,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  enemyCardIds: 0000000000000000000000000000000000000000
   cardPrefab: {fileID: 2657381645266730505, guid: 92ac35a21f7d3984f80a85d6060c180b, type: 3}
   phaseNum: 0
   transitioning: 0

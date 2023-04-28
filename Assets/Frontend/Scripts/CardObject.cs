@@ -33,6 +33,8 @@ public class CardObject : MonoBehaviour
 
     bool inHand = false;
 
+    int enemyCardId = 0;
+
     UnitType type;
 
     public int health;
@@ -89,7 +91,7 @@ public class CardObject : MonoBehaviour
                     //Debug.Log("selected!");
                     isSelected = true;
                 }
-                else if (isTouching && isSelected && (slotid >= 0) && !isPlayed)
+                else if (isTouching && isSelected && (slotid >= 0) && !isPlayed && _gm.IsGameSlotOpen(slotid))
                 {
                     //Debug.Log("play!");
                     Transform slotTrans = _gm.playerslots[slotid].transform;
@@ -97,7 +99,7 @@ public class CardObject : MonoBehaviour
                     transform.position = newPos;
                     isSelected = false;
                     isPlayed = true;
-                    //_gm.UpdateGameSlot(slotid);
+                    _gm.UpdateGameSlot(slotid, isPlayed);
                 }
                 else if (isTouching && !(_gm.IsTouched(touchPos, _coll)) && !isPlayed)
                 {
@@ -130,7 +132,6 @@ public class CardObject : MonoBehaviour
                             attacking = false;
                         }
                         isSelected = false;
-
                     }
 
                     else if (isTouching && (_gm.IsTouched(touchPos, _coll)) && attacksPerTurn != 0 && !attacking)

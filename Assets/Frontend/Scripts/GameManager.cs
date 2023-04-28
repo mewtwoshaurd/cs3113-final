@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
 
     public GameObject[] enemyCardObjs = new GameObject[5];
 
+    int[] playableSlots = new int[5];
     public GameObject cardPrefab;
 
     public int phaseNum;
@@ -41,6 +42,10 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        for(int i = 0; i < 5; i++)
+        {
+            playableSlots[i] = 0;
+        }
         UnitType randtype;
         for (int i = 0; i < 20; i++)
         {
@@ -222,7 +227,6 @@ public class GameManager : MonoBehaviour
                     break;
                 }
             }
-            
         }
         return cardId;
 
@@ -326,6 +330,30 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
         obj.transform.position = end;
+    }
+
+    public void UpdateGameSlot(int slotid, bool isPlayed)
+    {
+        if (isPlayed == true)
+        {
+            playableSlots[slotid] = 1;
+        }
+        else
+        {
+            playableSlots[slotid] = 0;
+        }
+    }
+
+    public bool IsGameSlotOpen(int slotid)
+    {
+        if (playableSlots[slotid] == 1)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
 }
