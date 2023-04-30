@@ -319,7 +319,7 @@ public static partial class Game
     {
         int damageDone = attacker.damage;
         // If the attacker has a sword, then they do +2 damage
-        if (attacker.heldItem != null && attacker.heldItem.itemType == ItemType.Sword)
+        if (attacker.heldItem != null && attacker.heldItem.itemType == ItemType.Dagger)
         {
             events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { attacker.id, attacker.heldItem.id } });
             damageDone += 2;
@@ -335,7 +335,7 @@ public static partial class Game
         defender.health -= damageDone;
         events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defender.id, -attacker.damage, 0, attacker.health, attacker.damage } });
         // If the defender took a non-zero amount of damage and has more than 0 health remaining and is holding a water, then they recieve +3 health
-        if (damageDone > 0 && defender.health > 0 && defender.heldItem != null && defender.heldItem.itemType == ItemType.Water)
+        if (damageDone > 0 && defender.health > 0 && defender.heldItem != null && defender.heldItem.itemType == ItemType.Apple)
         {
             events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { defender.id, defender.heldItem.id } });
             defender.health += 3;
@@ -364,7 +364,7 @@ public static partial class Game
     private static void HandleDeath(List<GameEvent> events, Card unit)
     {
         // If the unit is holding a pentagram, set unit health to 1 and do not die
-        if (unit.heldItem != null && unit.heldItem.itemType == ItemType.Pentagram)
+        if (unit.heldItem != null && unit.heldItem.itemType == ItemType.Star)
         {
             events.Add(new GameEvent { eventType = EventType.UnitItemActivation, data = new List<object> { unit.id, unit.heldItem.id } });
             unit.health = 1;
@@ -518,10 +518,10 @@ public enum UnitType
 public enum ItemType
 {
     NotApplicable,
-    Water,      // Cure 3 hp if damaged and not dead
+    Apple,      // Cure 3 hp if damaged and not dead
     SmokeBomb,  // Avoid all damage from attack
-    Pentagram,  // If killed, revive with 1 hp
-    Sword,      // +2 damage for the attack
+    Star,       // If killed, revive with 1 hp
+    Dagger,     // +2 damage for the attack
     Coffee      // Gain an extra attack after attacking
 }
 

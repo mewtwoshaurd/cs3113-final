@@ -55,13 +55,13 @@ public static class CardDicts
 
     public static Dictionary<UnitType, ItemType> unitItemDict = new Dictionary<UnitType, ItemType>
     {
-        {UnitType.Dog, ItemType.Water},
+        {UnitType.Dog, ItemType.Apple},
         {UnitType.Bat, ItemType.SmokeBomb},
         {UnitType.Gorilla, ItemType.Coffee},
         {UnitType.Bee, ItemType.SmokeBomb},
         {UnitType.HedgeHog, ItemType.SmokeBomb},
-        {UnitType.Monkey, ItemType.Sword},
-        {UnitType.Spider, ItemType.Pentagram},
+        {UnitType.Monkey, ItemType.Dagger},
+        {UnitType.Spider, ItemType.Star},
         {UnitType.Lion, ItemType.Coffee}
     };
 }
