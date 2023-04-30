@@ -509,7 +509,7 @@ public enum UnitType
     Bat,
     Gorilla,
     Bee,
-    Porcupine,
+    HedgeHog,
     Monkey,
     Spider,
     Lion
