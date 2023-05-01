@@ -56,12 +56,12 @@ public static partial class Game
                 unit.heldItemTurn = turn;
             }
         }
-        events.Add(new GameEvent { eventType = EventType.EncounterStarted, data = new List<object> { enemyUnits } });
+        events.Add(new GameEvent { eventType = EventType.EncounterStarted, data = new List<object> { CardListCopy(enemyUnits) } });
 
-        Game.deck = deck;
+        Game.deck = CardListCopy(deck);
         Game.deck = Game.deck.OrderBy(x => Guid.NewGuid()).ToList();
         Game.hand = Game.deck.Take(5).ToList();
-        events.Add(new GameEvent { eventType = EventType.HandGiven, data = new List<object> { Game.hand } });
+        events.Add(new GameEvent { eventType = EventType.HandGiven, data = new List<object> { CardListCopy(Game.hand) } });
 
         return events;
     }
@@ -203,7 +203,7 @@ public static partial class Game
             deck = deck.OrderBy(x => Guid.NewGuid()).ToList();
             int cardsToDraw = Math.Min(5, deck.Count);
             hand = deck.Take(cardsToDraw).ToList();
-            events.Add(new GameEvent { eventType = EventType.HandGiven, data = new List<object> { hand } });
+            events.Add(new GameEvent { eventType = EventType.HandGiven, data = new List<object> { CardListCopy(hand) } });
         }
 
         return events;
@@ -421,6 +421,16 @@ public static partial class Game
         List<GameEvent> endPhaseEvents = EndPhase();
         events.AddRange(endPhaseEvents);
     }
+
+    private static List<Card> CardListCopy(List<Card> cards)
+    {
+        List<Card> copy = new List<Card>();
+        foreach (Card card in cards)
+        {
+            copy.Add(card.Clone());
+        }
+        return copy;
+    }
 }
 
 public enum Phase
@@ -430,7 +440,7 @@ public enum Phase
     EnemyUnits,
 }
 
-public class Card : ICloneable
+public class Card
 {
     static int idCounter = 0;
 
@@ -453,7 +463,7 @@ public class Card : ICloneable
         heldItem = null;
     }
 
-    public object Clone()
+    public Card Clone()
     {
         Card card = new Card(id);
         card.cardType = cardType;
