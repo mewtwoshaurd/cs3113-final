@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6249593390660009837
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6249593390660009839}
+  - component: {fileID: 6249593390660009838}
+  m_Layer: 0
+  m_Name: Card To Texture Utility
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6249593390660009839
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6249593390660009837}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -10.981712, y: -14.766238, z: 38.06571}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6249593390660009838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6249593390660009837}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58c809b33fb19894ba03505973a84a71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitToMatList:
+  - unitType: 2
+    material: {fileID: 2100000, guid: aa8f5d8a3e038fa4b8a51d4d996cd143, type: 2}
+    texture: {fileID: 2800000, guid: ab859f5013e30ee4c9a8b6d7bd2d4c19, type: 3}
+  - unitType: 4
+    material: {fileID: 2100000, guid: 36a7f04374713be4ba19394a0a7c02be, type: 2}
+    texture: {fileID: 2800000, guid: 55fe0923c9b00f445b472ba11fed4f60, type: 3}
+  - unitType: 1
+    material: {fileID: 2100000, guid: e1d70b66ffa701d46b42ffa77da22341, type: 2}
+    texture: {fileID: 2800000, guid: b874ca30a2094a94fa066a7fd7ee5331, type: 3}
+  - unitType: 3
+    material: {fileID: 2100000, guid: 270c23147bd6745448aef446313682b0, type: 2}
+    texture: {fileID: 2800000, guid: f33e99012505e0c4e881827342291445, type: 3}
+  - unitType: 5
+    material: {fileID: 2100000, guid: 84f5beefda5bfc4498a45cb7c3cff953, type: 2}
+    texture: {fileID: 2800000, guid: 51844755485ecc644b9c6eb2689e8c89, type: 3}
+  - unitType: 8
+    material: {fileID: 2100000, guid: 39a556ccbec5fd1408076142f6217f31, type: 2}
+    texture: {fileID: 2800000, guid: 8f3a2059ca83dee4abc10e71fe9b4b23, type: 3}
+  - unitType: 6
+    material: {fileID: 2100000, guid: 64fdbd298496102429b4f0492ca9e5de, type: 2}
+    texture: {fileID: 2800000, guid: 5b7a2a4a13dbc594593892c0a7e730a1, type: 3}
+  - unitType: 7
+    material: {fileID: 2100000, guid: 7816245ae8c834942be528228feb7887, type: 2}
+    texture: {fileID: 2800000, guid: cea556da6cae5fe45b861f683d8207ea, type: 3}
+  - unitType: 0
+    material: {fileID: 2100000, guid: c31a0bb1c63e73947987857b59b16593, type: 2}
+    texture: {fileID: 2800000, guid: e3e5fdad1d1d31540ba0e54eac92fe0f, type: 3}
+  itemToMatList:
+  - itemType: 1
+    material: {fileID: 2100000, guid: 54b0c3c980263a2488cbf6d8f64a8bf9, type: 2}
+    texture: {fileID: 2800000, guid: c30fc9a325de6684ea7b4ab7e8542a1c, type: 3}
+  - itemType: 5
+    material: {fileID: 2100000, guid: 06a8fd7a0872f164cb624b0f9c511125, type: 2}
+    texture: {fileID: 2800000, guid: 9677111f78555f446b475bc78785c287, type: 3}
+  - itemType: 4
+    material: {fileID: 2100000, guid: f452599b86d76714aa213ea277453b1c, type: 2}
+    texture: {fileID: 2800000, guid: ba078433f157c1745a485b7faf5a492b, type: 3}
+  - itemType: 2
+    material: {fileID: 2100000, guid: a6a8824bef315454d9e71b76dd46d780, type: 2}
+    texture: {fileID: 2800000, guid: ba93c42273522364b8a1e45736479d31, type: 3}
+  - itemType: 3
+    material: {fileID: 2100000, guid: d77c6d5f665e8c34eabb77698640ae68, type: 2}
+    texture: {fileID: 2800000, guid: b2308e0914eb1814bbc63ea3757ca436, type: 3}
+  - itemType: 0
+    material: {fileID: 2100000, guid: 8daf2e097dad48948aea44342e18f04d, type: 2}
+    texture: {fileID: 2800000, guid: 99a63e37c19d84c419b8c13879356c63, type: 3}

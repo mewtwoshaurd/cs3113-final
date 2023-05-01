@@ -8,4 +8,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Frontend/Scenes/SampleScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/DeckSelect.unity
+    guid: 182fb41e83fd8424aaa384338c4ea992
+  - enabled: 1
+    path: Assets/Scenes/RewardScene.unity
+    guid: e45f59037fbc35b47bfcf2ca81faa523
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 2d6bbaff48f7e924a87e48068b94e71a
   m_configObjects: {}
