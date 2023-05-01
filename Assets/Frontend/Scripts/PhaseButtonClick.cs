@@ -9,13 +9,13 @@ public class PhaseButtonClick : MonoBehaviour
     Camera cam;
     public LayerMask targetLayer;
 
-    BoxCollider _coll;
+    CapsuleCollider _coll;
     GameManager _gm;
     bool isSelected = false;
     int unitId;
     void Start()
     {
-        _coll = GetComponent<BoxCollider>();
+        _coll = GetComponent<CapsuleCollider>();
         _gm = (GameManager)FindObjectOfType<GameManager>();
     }
 
@@ -24,29 +24,21 @@ public class PhaseButtonClick : MonoBehaviour
     {
         bool isTouching = false;
         Vector3 touchPos = Vector3.zero;
-#if !UNITY_ANDROID || UNITY_EDITOR
-        if (Input.GetMouseButton(0))
-        {
-            touchPos = Input.mousePosition;
-            isTouching = true;
-        }
-#else
+// #if !UNITY_ANDROID || UNITY_EDITOR
+//         if (Input.GetMouseButton(0))
+//         {
+//             touchPos = Input.mousePosition;
+//             isTouching = true;
+//         }
+// #else
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
             touchPos = touch.position;
-            isTouching = (touch.phase == TouchPhase.Began);
-        }
-#endif
-
-        if (isTouching)
-        {
-            //Debug.Log(EventSystem.current.IsPointerOverGameObject(id));
-            if (_gm.IsTouched(touchPos, _coll) && (_gm.hasPhaseChanged()) && !(_gm.transitioning))
-            {
-                //Debug.Log("buttonClicked");
-                _gm.IncrementPhase();
-            }
-        }
+            isTouching = _gm.IsTouched(touch,_coll);
+            if(touch.phase ==  TouchPhase.Ended && isTouching){
+                    _gm.IncrementPhase();
+            }                
+        }     
     }
 }

@@ -10,41 +10,27 @@ public class CardObject : MonoBehaviour
     Rigidbody _rigidbody;
     Camera cam;
     public LayerMask targetLayer;
-
     BoxCollider _coll;
-
     Renderer _mr;
     //public float speed = 1;
     //public float maxSpeed = 10;
     public float cardOffset = -0.1f;
-
     public Material[] mats;
-
     GameManager _gm;
-
     public int unitId;
-
     bool isSelected = false;
 
     bool isPlayed = false;
-
     int slotid = -1;
     int enemyCardSlot = -1;
-
     bool inHand = false;
-
     int enemyCardId = 0;
-
     UnitType type;
-
     public int health;
     public TMPro.TextMeshProUGUI _health;
-
     public TMPro.TextMeshProUGUI _attack;
-
     List<GameEvent> events = new List<GameEvent>();
     public TMPro.TextMeshProUGUI _name;
-
     public TMPro.TextMeshProUGUI _ability;
 
     public int attacksPerTurn = 4;
@@ -113,10 +99,6 @@ public class CardObject : MonoBehaviour
                 slotid = _gm.IsTouchingPlayerSlot(touchPos);
                 print("slotId " + slotid);
 
-                if (attacksPerTurn == 0)
-                {
-                    _gm.PhaseTextChange("NO MORE ATTACKS", 1f);
-                }
                 if (isTouching && !(_gm.IsTouched(touchPos, _coll)) && isSelected && attacksPerTurn != 0)
                 {
                     print("playerid " + unitId);
@@ -138,7 +120,6 @@ public class CardObject : MonoBehaviour
                 else if (isTouching && (_gm.IsTouched(touchPos, _coll)) && attacksPerTurn != 0 && !attacking && !isSelected)
                 {
                     isSelected = true;
-                    StartCoroutine(_gm.PhaseTextChange("pick an enemy to attack", 1f));
                     print("picking player");
                     attacking = true;
                 }

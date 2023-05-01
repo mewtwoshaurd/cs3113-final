@@ -13,12 +13,19 @@ public class GameManager : MonoBehaviour
     //public Transform enemyDeck;
     public GameObject[] playerslots;
 
+    public GameObject RulesCanvas;
+
     public GameObject[] handslots;
 
     public GameObject enemyPrefab;
 
     public TMPro.TextMeshPro PhaseButton;
     public TMPro.TextMeshProUGUI PhaseText;
+
+    public TMPro.TextMeshProUGUI TurnText;
+
+    
+    public TMPro.TextMeshProUGUI WarningText;
 
     public GameObject[] enemyslots;
 
@@ -42,6 +49,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        RulesCanvas.transform.position = new Vector3(100000000,100000000,0);
         for(int i = 0; i < 5; i++)
         {
             playableSlots[i] = 0;
@@ -92,45 +100,44 @@ public class GameManager : MonoBehaviour
         if (phaseNum == 0 && !PhaseChanged && !transitioning)
         {
             PhaseButton.text = "NEXT";
-            StartCoroutine(PhaseTextChange("TURN " + turnNum, 1.5f, "CARD PHASE", 1.5f));
+            StartCoroutine(PhaseTextChange( "CARD PHASE"));
 
         }
         if (phaseNum == 1 && !PhaseChanged && !transitioning)
         {
             PhaseButton.text = "END";
-            StartCoroutine(PhaseTextChange("ATTACK PHASE", 1.5f));
+            StartCoroutine(PhaseTextChange("ATTACK PHASE"));
         }
         if (phaseNum == 2 && !PhaseChanged && !transitioning)
         {
             PhaseButton.text = "NEXT";
-            StartCoroutine(PhaseTextChange("ENEMY PHASE", 1.5f));
-            turnNum++;
+            StartCoroutine(PhaseTextChange("ENEMY PHASE"));
+            
         }
 
     }
 
     public void IncrementPhase()
     {
-        try
-        {
-
-            events = Game.EndPhase();
-            if (phaseNum < 2)
-            {
-                phaseNum++;
+        events = Game.EndPhase();
+        foreach(GameEvent e in events){
+            if(e.eventType == EventType.Error){
+                GiveWarning("You Must Play a Card to Move On",2f);
             }
-            else
-            {
-                phaseNum = 0;
-            }
-            PhaseChanged = !PhaseChanged;
-            //print("try successful");
         }
-        catch (Exception e)
+        if(phaseNum == 2){
+            EnemyAttack(events);
+        }
+        if (phaseNum < 2)
         {
-            PhaseText.text = "Play Card to Continue";
-            //print(e.Message);
+            phaseNum++;
         }
+        else
+        {
+            phaseNum = 0;
+        }
+        PhaseChanged = !PhaseChanged;
+        //print("try successful");
 
     }
 
@@ -152,6 +159,14 @@ public class GameManager : MonoBehaviour
         return collider.Raycast(_ray, out _hit, 1000.0f);
     }
 
+    public bool IsTouched(Touch touch, CapsuleCollider collider)
+    {
+        Ray _ray = Camera.main.ScreenPointToRay(new Vector3(touch.position.x, touch.position.y, 0));
+        RaycastHit _hit;
+
+        return collider.Raycast(_ray, out _hit, 1000.0f);
+    }
+
 
     public bool IsTouched(Vector3 mousePos, BoxCollider collider)
     {
@@ -165,6 +180,17 @@ public class GameManager : MonoBehaviour
     {
         card.GetComponent<CardObject>().health += deltaHealth;
         card.GetComponent<CardObject>()._health.text = card.GetComponent<CardObject>().health.ToString();
+    }
+
+    public void EnemyAttack(List<GameEvent> events){
+        GameObject[] playercards = GameObject.FindGameObjectsWithTag("PlayerCard");
+        GameObject[] enemycards = GameObject.FindGameObjectsWithTag("EnemyCard");
+
+        foreach(GameEvent e in events){
+            if(e.eventType==EventType.UnitAttacked){
+                print(e.data);
+            }
+        }
     }
 
 
@@ -290,6 +316,10 @@ public class GameManager : MonoBehaviour
                 Debug.Log("joever");
             }
         }
+    }
+
+    public void updateTurnText(){
+        TurnText.text = "Turn: " + (turnNum);
     }
     public int IsTouchingPlayerSlot(Touch touch)
     {
@@ -427,17 +457,22 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public IEnumerator PhaseTextChange(string PhaseName, float FirstWait, String NextText = "", float SecondWait = 0f)
+    public IEnumerator PhaseTextChange(string PhaseName)
     {
         transitioning = true;
         PhaseChanged = true;
         PhaseText.text = PhaseName;
-        yield return new WaitForSeconds(FirstWait);
-        PhaseText.text = NextText;
-        yield return new WaitForSeconds(SecondWait);
-        PhaseText.text = "";
+        yield return new WaitForSeconds(0);
         //PhaseChanged = false;
         transitioning = false;
+    }
+
+    public IEnumerator GiveWarning(string warning, float WaitTime)
+    {
+        WarningText.text = warning;
+        yield return new WaitForSeconds(WaitTime);
+        WarningText.text = "";
+
     }
 
     IEnumerator Lerp(GameObject obj, Vector3 end, float duration)
