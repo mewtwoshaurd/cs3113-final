@@ -8,6 +8,7 @@ public class MainMenu : MonoBehaviour
     public string deckSelectSceneName;
     public string tutorialSceneName;
     public GameObject musicBox;
+    public GameObject sfxBox;
 
     void Start()
     {
@@ -17,10 +18,12 @@ public class MainMenu : MonoBehaviour
     public void loadDeckSelect()
     {
         SceneManager.LoadScene(deckSelectSceneName);
+        Instantiate(sfxBox);
     }
 
     public void loadTutorial()
     {
         SceneManager.LoadScene(tutorialSceneName);
+        Instantiate(sfxBox);
     }
 }

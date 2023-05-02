@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class Reward : MonoBehaviour
@@ -9,7 +8,7 @@ public class Reward : MonoBehaviour
     [SerializeField] string encounterSceneName;
     [SerializeField] CardToTextureUtility cttu;
 
-    [SerializeField] RawImage card;
+    [SerializeField] MeshRenderer card;
 
     UnitType unitReward;
     ItemType itemReward;
@@ -40,9 +39,9 @@ public class Reward : MonoBehaviour
         itemReward = items[Random.Range(0, items.Count)];
 
         if (giveUnit)
-            card.texture = cttu.getUnitTexture(unitReward);
+            card.material = cttu.getUnitMat(unitReward);
         else
-            card.texture = cttu.getItemTexture(itemReward);
+            card.material = cttu.getItemMat(itemReward);
     }
 
     public void Accept()

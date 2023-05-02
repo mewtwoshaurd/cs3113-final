@@ -14,6 +14,8 @@ public class DeckSelect : MonoBehaviour
     [SerializeField] Color unpressedColor;
     [SerializeField] Color pressedColor;
 
+    [SerializeField] GameObject sfxBox;
+
     int currentlySelected = 0;
 
     public void SelectFirst()
@@ -35,6 +37,8 @@ public class DeckSelect : MonoBehaviour
         cardImages[3].texture = cttu.getItemTexture(ItemType.Apple);
         cardImages[4].texture = cttu.getItemTexture(ItemType.Apple);
         cardImages[5].texture = cttu.getItemTexture(ItemType.Dagger);
+
+        GameObject.Instantiate(sfxBox);
     }
 
     public void SelectSecond()
@@ -56,6 +60,8 @@ public class DeckSelect : MonoBehaviour
         cardImages[3].texture = cttu.getItemTexture(ItemType.SmokeBomb);
         cardImages[4].texture = cttu.getItemTexture(ItemType.SmokeBomb);
         cardImages[5].texture = cttu.getItemTexture(ItemType.Dagger);
+
+        GameObject.Instantiate(sfxBox);
     }
 
     public void SelectThird()
@@ -77,6 +83,8 @@ public class DeckSelect : MonoBehaviour
         cardImages[3].texture = cttu.getItemTexture(ItemType.Coffee);
         cardImages[4].texture = cttu.getItemTexture(ItemType.SmokeBomb);
         cardImages[5].texture = cttu.getItemTexture(ItemType.Star);
+
+        GameObject.Instantiate(sfxBox);
     }
 
     public void Ok()
@@ -124,5 +132,7 @@ public class DeckSelect : MonoBehaviour
         DeckManager.playerDeck = playerDeck;
 
         SceneManager.LoadScene(encounterSceneName);
+
+        GameObject.Instantiate(sfxBox);
     }
 }
