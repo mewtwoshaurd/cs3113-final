@@ -7,6 +7,12 @@ public class MainMenu : MonoBehaviour
 {
     public string deckSelectSceneName;
     public string tutorialSceneName;
+    public GameObject musicBox;
+
+    void Start()
+    {
+        DontDestroyOnLoad(musicBox);
+    }
 
     public void loadDeckSelect()
     {
