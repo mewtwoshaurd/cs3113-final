@@ -18,6 +18,13 @@ public class DeckSelect : MonoBehaviour
 
     int currentlySelected = 0;
 
+    GameObject musicBox;
+
+    void Start()
+    {
+        musicBox = GameObject.FindGameObjectWithTag("MusicBox");
+    }
+
     public void SelectFirst()
     {
         currentlySelected = 1;
@@ -134,5 +141,7 @@ public class DeckSelect : MonoBehaviour
         SceneManager.LoadScene(encounterSceneName);
 
         GameObject.Instantiate(sfxBox);
+
+        Destroy(musicBox);
     }
 }

@@ -1108,7 +1108,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deckSelectSceneName: DeckSelect
-  tutorialSceneName: RewardScene
+  tutorialSceneName: TutorialScene
   musicBox: {fileID: 489958092}
   sfxBox: {fileID: 646757856845200926, guid: bf9a5fc301a6a46438944796ba68f230, type: 3}
 --- !u!114 &1715890447

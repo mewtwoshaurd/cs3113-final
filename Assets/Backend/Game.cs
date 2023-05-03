@@ -173,15 +173,25 @@ public static partial class Game
             // units regenerate attacks
             foreach (Card card in playerUnits)
             {
-                // swarm units get 3 attacks
-                if (card.abilityType == AbilityType.Swarm)
+                // lazy units get attack stat modified
+                if (card.abilityType == AbilityType.Lazy)
                 {
-                    card.attacksRemaining += 3;
+                    events.Add(new GameEvent { eventType = EventType.UnitAbilityActivation, data = new List<object> { card.id } });
+                    int delta = -card.damage;
+                    card.damage = (card.damage == 0) ? CardDicts.unitDamageDict[card.unitType] : 0;
+                    delta += card.damage;
+                    events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { card.id, 0, delta, card.health, card.damage } });
                 }
-                else
+
+                // swarm units get +1 attack if they did not attack last turn
+                if (card.abilityType == AbilityType.Swarm && card.attacksRemaining != 0)
                 {
-                    card.attacksRemaining += 1;
+                    events.Add(new GameEvent { eventType = EventType.UnitAbilityActivation, data = new List<object> { card.id } });
+                    card.damage++;
+                    events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { card.id, 0, 1, card.health, card.damage } });
                 }
+
+                card.attacksRemaining = 1;
             }
         }
         else if (phase == Phase.PlayerUnits)
@@ -189,6 +199,30 @@ public static partial class Game
             // change phase
             phase = Phase.EnemyUnits;
             events.Add(new GameEvent { eventType = EventType.PhaseEnded, data = new List<object> { phase } });
+
+            foreach (Card card in enemyUnits)
+            {
+                // lazy units get attack stat modified
+                if (card.abilityType == AbilityType.Lazy)
+                {
+                    events.Add(new GameEvent { eventType = EventType.UnitAbilityActivation, data = new List<object> { card.id } });
+                    int delta = -card.damage;
+                    card.damage = (card.damage == 0) ? CardDicts.unitDamageDict[card.unitType] : 0;
+                    delta += card.damage;
+                    events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { card.id, 0, delta, card.health, card.damage } });
+                }
+
+                // swarm units get +1 attack if they did not attack last turn
+                if (card.abilityType == AbilityType.Swarm && card.attacksRemaining != 0)
+                {
+                    events.Add(new GameEvent { eventType = EventType.UnitAbilityActivation, data = new List<object> { card.id } });
+                    card.damage++;
+                    events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { card.id, 0, 1, card.health, card.damage } });
+                }
+
+                card.attacksRemaining = 1;
+            }
+
             HandleEnemyTurn(events);
         }
         else if (phase == Phase.EnemyUnits)
@@ -287,14 +321,6 @@ public static partial class Game
             {
                 HandleDeath(events, attacker);
             }
-        }
-
-        // If the attacker has the lazy ability, decrease its attacks remaining by 1
-        if (attacker.abilityType == AbilityType.Lazy && attacker.health > 0)
-        {
-            events.Add(new GameEvent { eventType = EventType.UnitAbilityActivation, data = new List<object> { attacker.id } });
-            attacker.attacksRemaining--;
-            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { attacker.id, 0, -1, attacker.health, attacker.damage } });
         }
 
         return events;
@@ -542,7 +568,7 @@ public enum AbilityType
     Curse,          // If attacked, set hp of attacker and defender to 0
     Wild,           // After attacking, attack and defense stats swap
     Bloodsucker,    // After attacking, regenerate 1 hp
-    Lazy,           // After attacking, require an extra turn's worth of rest to get another attack
+    Lazy,           // Every turn the attack stat gets changed between 0 and the original value
     Swarm,          // Gets triple the amount of rest per turn
     Spikey          // When attacked, deal 1 damage to the attacker
 }
