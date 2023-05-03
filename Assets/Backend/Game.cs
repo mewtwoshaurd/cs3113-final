@@ -69,11 +69,15 @@ public static partial class Game
         // take 2 units and 3 items
         for (int i = 0; i < 2; i++)
         {
+            if (unitCards.Count - 1 < i)
+                break;
             hand.Add(unitCards[i]);
             deck.Remove(unitCards[i]);
         }
         for (int i = 0; i < 3; i++)
         {
+            if (itemCards.Count - 1 < i)
+                break;
             hand.Add(itemCards[i]);
             deck.Remove(itemCards[i]);
         }
