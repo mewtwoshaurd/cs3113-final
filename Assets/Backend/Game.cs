@@ -402,7 +402,7 @@ public static partial class Game
             defender.heldItem = null;
         }
         defender.health -= damageDone;
-        events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defender.id, -attacker.damage, 0, attacker.health, attacker.damage } });
+        events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { defender.id, -damageDone, 0, defender.health, defender.damage } });
         // If the defender took a non-zero amount of damage and has more than 0 health remaining and is holding a water, then they recieve +3 health
         if (damageDone > 0 && defender.health > 0 && defender.heldItem != null && defender.heldItem.itemType == ItemType.Apple)
         {
