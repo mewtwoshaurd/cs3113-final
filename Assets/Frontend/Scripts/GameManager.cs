@@ -241,10 +241,13 @@ public class GameManager : MonoBehaviour
             }
         }
         foreach(GameObject card in playercards){
-            if(card.GetComponent<CardObject>().GetUnitId() == attackerId){
-                attacker = card;
-                print("card found 2");
-                break;
+            print(card);
+            if(card != null){
+                if(card.GetComponent<CardObject>().GetUnitId() == attackerId){
+                    attacker = card;
+                    print("card found 2");
+                    break;
+                }
             }
         }        
         if(attacker!=null && defender != null){
@@ -267,14 +270,14 @@ public class GameManager : MonoBehaviour
         yield return null;
     }
 
-    public void PlayerAttackEvent(int attackerId, int defenderSlot)
+    public void PlayerAttackEvent(int attackerId, int defenderId)
     {
         //print("slot id :" + attackerId);
-        //print("defenderslot :" + defenderSlot);
+        //print("defenderId :" + defenderId);
         GameObject[] playercards = GameObject.FindGameObjectsWithTag("PlayerCard");
         GameObject[] enemycards = GameObject.FindGameObjectsWithTag("EnemyCard");
-        events = Game.AttackUnit(attackerId,defenderSlot);
-        DisplayEnemyAttack(defenderSlot, attackerId);
+        DisplayPlayerAttack(attackerId, defenderId);
+        events = Game.AttackUnit(attackerId,defenderId);
         //Debug.Log(events);
         foreach (GameEvent e in events)
         {
