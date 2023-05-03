@@ -224,7 +224,7 @@ public class GameManager : MonoBehaviour
         
     }
 
-    IEnumerator attackAnimation(GameObject attacker, Vector3 attackerPos, GameObject defeneder){
+    IEnumerator attackAnimation(GameObject attacker, Vector3 attackerPos, GameObject defender){
         print("running animation");
         StartCoroutine(Lerp(attacker,new Vector3(attackerPos.x,attackerPos.y,attackerPos.z-1f),10f));
         new WaitForSeconds(1f);
