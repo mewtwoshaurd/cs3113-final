@@ -11,7 +11,7 @@ public class PhaseButtonClick : MonoBehaviour
 
     CapsuleCollider _coll;
     GameManager _gm;
-    bool isSelected = false;
+    //bool isSelected = false;
     int unitId;
     void Start()
     {

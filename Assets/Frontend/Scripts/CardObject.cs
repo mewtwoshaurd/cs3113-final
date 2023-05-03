@@ -22,7 +22,7 @@ public class CardObject : MonoBehaviour
 
     bool isPlayed = false;
     int slotid = -1;
-    int enemyCardSlot = -1;
+    //int enemyCardSlot = -1;
     bool inHand = false;
     int enemyCardId = 0;
     UnitType type;
@@ -62,8 +62,6 @@ public class CardObject : MonoBehaviour
             isTouching = (touch.phase == TouchPhase.Began);
         }
 #endif
-
-
         slotid = _gm.IsTouchingPlayerSlot(touchPos);
         phaseNum = _gm.currentPhase();
         switch (phaseNum)
@@ -98,13 +96,13 @@ public class CardObject : MonoBehaviour
 
                     if (isTouching && !(_gm.IsTouched(touchPos, _coll)) && isSelected)
                     {
-                        print("selecting enemy");
+                        //print("selecting enemy");
                         enemyCardId = _gm.IsTouchingEnemyCard(touchPos);
                         if (enemyCardId >= 0)
                         {
                             _gm.PlayerAttackEvent(unitId, enemyCardId);
                             //_gm.AttackResults(events);
-                            print("attacked");
+                            //print("attacked");
                             //attacksPerTurn--;
                             //print(attacksPerTurn);
                             attacking = false;
@@ -157,23 +155,23 @@ public class CardObject : MonoBehaviour
         if (newtype == UnitType.Bat)
         {
             _mrcopy[0] = mats[0];
-            _name.text = "Bat";
+            //_name.text = "Bat";
 
         }
         else if (newtype == UnitType.Bee)
         {
             _mrcopy[0] = mats[1];
-            _name.text = "Bee";
+            //_name.text = "Bee";
         }
         else if (newtype == UnitType.Dog)
         {
             _mrcopy[0] = mats[2];
-            _name.text = "Dog";
+            //_name.text = "Dog";
         }
         else if (newtype == UnitType.Spider)
         {
             _mrcopy[0] = mats[3];
-            _name.text = "Spider";
+            //_name.text = "Spider";
         }
         _mr.materials = _mrcopy;
     }

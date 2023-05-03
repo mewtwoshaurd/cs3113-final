@@ -2767,6 +2767,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 897726335402147535, guid: 94d30b8f8afa37242bb815c561acb674, type: 3}
     - target: {fileID: 2454884638125579698, guid: ec6178febf45a184a928718d4ac2cf6a, type: 3}
+      propertyPath: animationTime
+      value: 1.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 2454884638125579698, guid: ec6178febf45a184a928718d4ac2cf6a, type: 3}
       propertyPath: handslots.Array.data[0]
       value: 
       objectReference: {fileID: 927754885}
