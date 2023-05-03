@@ -22,6 +22,8 @@ public class CardObject : MonoBehaviour
 
     bool isPlayed = false;
     int slotid = -1;
+
+    int permaSlotId = -1;
     //int enemyCardSlot = -1;
     bool inHand = false;
     int enemyCardId = 0;
@@ -62,7 +64,7 @@ public class CardObject : MonoBehaviour
             isTouching = (touch.phase == TouchPhase.Began);
         }
 #endif
-        slotid = _gm.IsTouchingPlayerSlot(touchPos);
+        //slotid = _gm.IsTouchingPlayerSlot(touchPos);
         phaseNum = _gm.currentPhase();
         switch (phaseNum)
         {
@@ -81,8 +83,10 @@ public class CardObject : MonoBehaviour
                     transform.position = newPos;
                     isSelected = false;
                     isPlayed = true;
+                    inHand = false;
                     Game.PlayUnit(unitId);
                     _gm.UpdateGameSlot(slotid, isPlayed);
+                    permaSlotId = slotid;
                 }
                 else if (isTouching && !(_gm.IsTouched(touchPos, _coll)) && !isPlayed)
                 {
@@ -92,7 +96,7 @@ public class CardObject : MonoBehaviour
                 break;
             case 1:
                 if((tag == "PlayerCard")){
-                    slotid = _gm.IsTouchingPlayerSlot(touchPos);
+                    //slotid = _gm.IsTouchingPlayerSlot(touchPos);
 
                     if (isTouching && !(_gm.IsTouched(touchPos, _coll)) && isSelected)
                     {
@@ -189,5 +193,10 @@ public class CardObject : MonoBehaviour
         _renderer.material.color = damamgeColor;
         yield return new WaitForSeconds(timeColorChange);
         _renderer.material.color = defaultColor;
+    }
+
+    public int GetUnitSlot()
+    {
+        return permaSlotId;
     }
 }

@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
     List<Card> enemies = new List<Card>();
 
     //public Transform enemyDeck;
+
+    public Transform playerDeck;
     public GameObject[] playerslots;
 
     public GameObject RulesCanvas;
@@ -213,7 +215,7 @@ public class GameManager : MonoBehaviour
                     var card = go.GetComponent<CardObject>();
                     if(idToCheck == card.GetUnitId())
                     {
-                        card.UpdateStats((int)(e.data[3])+(int)(e.data[1]), (int)(e.data[4])+(int)(e.data[2]));
+                        card.UpdateStats((int)(e.data[3]), (int)(e.data[4]));
                         break;
                     }
                 }
@@ -224,7 +226,7 @@ public class GameManager : MonoBehaviour
                     Debug.Log("You asshole.... " + go.GetInstanceID());
                     if(idToCheck == card.GetUnitId())
                     {
-                        card.UpdateStats((int)(e.data[3])+(int)(e.data[1]), (int)(e.data[4])+(int)(e.data[2]));
+                        card.UpdateStats((int)(e.data[3]), (int)(e.data[4]));
                         break;
                     }
                 }
@@ -237,6 +239,9 @@ public class GameManager : MonoBehaviour
                     var card = go.GetComponent<CardObject>();
                     if(idToCheck == card.GetUnitId())
                     {
+                        int handSlotToRemove = card.GetUnitSlot();
+                        Debug.Log("Play slot please... " + handSlotToRemove.ToString());
+                        UpdateGameSlot(handSlotToRemove, false);
                         Destroy(go, animationTime);
                     }
                 }
@@ -363,6 +368,7 @@ public class GameManager : MonoBehaviour
         events = Game.AttackUnit(attackerId,defenderId);
         foreach (GameEvent e in events)
         {
+            Debug.Log(e.eventType);
             if(e.eventType==EventType.UnitStatChanged)
             {
                 int idToCheck = (int)e.data[0];
@@ -371,7 +377,7 @@ public class GameManager : MonoBehaviour
                     var card = go.GetComponent<CardObject>();
                     if(idToCheck == card.GetUnitId())
                     {
-                        card.UpdateStats((int)(e.data[3])+(int)(e.data[1]), (int)(e.data[4])+(int)(e.data[2]));
+                        card.UpdateStats((int)(e.data[3]), (int)(e.data[4]));
                         break;
                     }
                 }
@@ -382,7 +388,11 @@ public class GameManager : MonoBehaviour
                     Debug.Log("You asshole.... " + go.GetInstanceID());
                     if(idToCheck == card.GetUnitId())
                     {
-                        card.UpdateStats((int)(e.data[3])+(int)(e.data[1]), (int)(e.data[4])+(int)(e.data[2]));
+                        Debug.Log("Health before: " + (e.data[3]));
+                        Debug.Log("Health delta: " + (e.data[1]));
+                        Debug.Log("Attack before: " + e.data[4]);
+                        Debug.Log("Attack delta: " + e.data[2]);
+                        card.UpdateStats((int)(e.data[3]), (int)(e.data[4]));
                         break;
                     }
                 }
@@ -395,7 +405,9 @@ public class GameManager : MonoBehaviour
                     var card = go.GetComponent<CardObject>();
                     if(idToCheck == card.GetUnitId())
                     {
-                        Destroy(go);
+                        int handSlotToRemove = card.GetUnitSlot();
+                        Destroy(go, animationTime);
+                        UpdateGameSlot(handSlotToRemove, false);
                     }
                 }
                 foreach(GameObject go in enemycards)
@@ -403,13 +415,20 @@ public class GameManager : MonoBehaviour
                     var card = go.GetComponent<CardObject>();
                     if(idToCheck == card.GetUnitId())
                     {
-                        Destroy(go);
+                        Destroy(go, animationTime);
                     }
                 }
             }
             if(e.eventType == EventType.EncounterEnded)
             {
-                Debug.Log("joever");
+                if((bool)e.data[0])
+                {
+                    SceneManager.LoadScene("RewardScene");
+                }
+                else
+                {
+                    Debug.Log("joever");
+                }
             }
             if(e.eventType == EventType.Error)
             {
@@ -428,6 +447,7 @@ public class GameManager : MonoBehaviour
     public void updateTurnText(){
         TurnText.text = "Turn: " + (turnNum);
     }
+
     public int IsTouchingPlayerSlot(Touch touch)
     {
         BoxCollider _coll;
@@ -539,7 +559,7 @@ public class GameManager : MonoBehaviour
         GameObject currentCard;
         foreach (Card c in hand)
         {
-            currentCard = Instantiate(cardPrefab, new Vector3(handslots[handslotid].transform.position.x, handslots[handslotid].transform.position.y, handslots[handslotid].transform.position.z), Quaternion.Euler(0, 0, 180));
+            currentCard = Instantiate(cardPrefab, new Vector3(playerDeck.position.x, playerDeck.position.y, playerDeck.position.z), Quaternion.Euler(0, 0, 180));
             currentCard.GetComponent<CardObject>().SetUnitId(c.id);
             print("cardobj id: "+c.id);
             currentCard.tag = "PlayerCard";
@@ -559,6 +579,7 @@ public class GameManager : MonoBehaviour
         {
             if (c.GetComponent<CardObject>().GetInHand())
             {
+                Instantiate(damagePrefab);
                 Destroy(c);
             }
         }
