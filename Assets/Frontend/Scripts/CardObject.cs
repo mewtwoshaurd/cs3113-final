@@ -33,8 +33,6 @@ public class CardObject : MonoBehaviour
     public TMPro.TextMeshProUGUI _name;
     public TMPro.TextMeshProUGUI _ability;
 
-    public int attacksPerTurn = 4;
-
     public static bool attacking = false;
 
     int phaseNum = 0;
@@ -95,38 +93,35 @@ public class CardObject : MonoBehaviour
                 }
                 break;
             case 1:
-                print("isSelected " + isSelected);
-                slotid = _gm.IsTouchingPlayerSlot(touchPos);
-                print("slotId " + slotid);
+                if((tag == "PlayerCard")){
+                    slotid = _gm.IsTouchingPlayerSlot(touchPos);
 
-                if (isTouching && !(_gm.IsTouched(touchPos, _coll)) && isSelected && attacksPerTurn != 0)
-                {
-                    print("playerid " + unitId);
-                    enemyCardId = _gm.IsTouchingEnemyCard(touchPos);
-                    print("enemyID " + enemyCardId);
-                    if (enemyCardId >= 0)
+                    if (isTouching && !(_gm.IsTouched(touchPos, _coll)) && isSelected)
                     {
-                        _gm.AttackEvent(unitId, enemyCardId);
-                        //_gm.AttackResults(events);
-                        print("attacked");
-                        //attacksPerTurn--;
-                        //print(attacksPerTurn);
-                        attacking = false;
+                        print("selecting enemy");
+                        enemyCardId = _gm.IsTouchingEnemyCard(touchPos);
+                        if (enemyCardId >= 0)
+                        {
+                            _gm.PlayerAttackEvent(unitId, enemyCardId);
+                            //_gm.AttackResults(events);
+                            print("attacked");
+                            //attacksPerTurn--;
+                            //print(attacksPerTurn);
+                            attacking = false;
+                        }
+                        isSelected = false;
                     }
-                    isSelected = false;
-                    attacksPerTurn = 0;
-                }
 
-                else if (isTouching && (_gm.IsTouched(touchPos, _coll)) && attacksPerTurn != 0 && !attacking && !isSelected)
-                {
-                    isSelected = true;
-                    print("picking player");
-                    attacking = true;
+                    else if (isTouching && (_gm.IsTouched(touchPos, _coll)) && !attacking && !isSelected)
+                    {
+                        print("selecting player");
+                        isSelected = true;
+                        attacking = true;
+                    }
+                    break;
                 }
                 break;
-            
             case 2:
-                attacksPerTurn = 1;
                 break;
         }
     }
@@ -185,13 +180,11 @@ public class CardObject : MonoBehaviour
 
     public void UpdateStats(int healthChange, int damageChange)
     {
-        print("Doing Thing");
         _health.text = healthChange.ToString();
         _attack.text = damageChange.ToString();
     }
 
     public IEnumerator takeDamage(float timeColorChange){
-        print("color changed");
         var _renderer = GetComponent<Renderer>();
         Color damamgeColor = new Color(1f,0f,0f,1f);
         Color defaultColor  = new Color(1f,1f,1f,1f);

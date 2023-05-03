@@ -527,7 +527,7 @@ GameObject:
   - component: {fileID: 2657381645266730499}
   m_Layer: 6
   m_Name: Card
-  m_TagString: Untagged
+  m_TagString: PlayerCard
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -654,7 +654,6 @@ MonoBehaviour:
   _attack: {fileID: 2634085720831564483}
   _name: {fileID: 392121107318463708}
   _ability: {fileID: 6214787749588281284}
-  attacksPerTurn: 4
 --- !u!1 &5677370283893657237
 GameObject:
   m_ObjectHideFlags: 0
