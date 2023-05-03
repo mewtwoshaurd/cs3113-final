@@ -37,12 +37,15 @@ public class CardObject : MonoBehaviour
 
     public static bool attacking = false;
 
+    SoundEmitter soundEmitter;
+
     int phaseNum = 0;
     void Start()
     {
         _rigidbody = GetComponent<Rigidbody>();
         _coll = GetComponent<BoxCollider>();
         _gm = (GameManager)FindObjectOfType<GameManager>();
+        soundEmitter = GameObject.FindGameObjectWithTag("SoundEmitter").GetComponent<SoundEmitter>();
     }
 
     // Update is called once per frame
@@ -85,6 +88,7 @@ public class CardObject : MonoBehaviour
                     isPlayed = true;
                     inHand = false;
                     Game.PlayUnit(unitId);
+                    soundEmitter.PlayCardSound();
                     _gm.UpdateGameSlot(slotid, isPlayed);
                     permaSlotId = slotid;
                 }
@@ -95,7 +99,8 @@ public class CardObject : MonoBehaviour
                 }
                 break;
             case 1:
-                if((tag == "PlayerCard")){
+                if ((tag == "PlayerCard"))
+                {
                     //slotid = _gm.IsTouchingPlayerSlot(touchPos);
 
                     if (isTouching && !(_gm.IsTouched(touchPos, _coll)) && isSelected)
@@ -186,10 +191,11 @@ public class CardObject : MonoBehaviour
         _attack.text = damageChange.ToString();
     }
 
-    public IEnumerator takeDamage(float timeColorChange){
+    public IEnumerator takeDamage(float timeColorChange)
+    {
         var _renderer = GetComponent<Renderer>();
-        Color damamgeColor = new Color(1f,0f,0f,1f);
-        Color defaultColor  = new Color(1f,1f,1f,1f);
+        Color damamgeColor = new Color(1f, 0f, 0f, 1f);
+        Color defaultColor = new Color(1f, 1f, 1f, 1f);
         _renderer.material.color = damamgeColor;
         yield return new WaitForSeconds(timeColorChange);
         _renderer.material.color = defaultColor;

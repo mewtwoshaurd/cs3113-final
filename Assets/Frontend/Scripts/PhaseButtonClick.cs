@@ -11,6 +11,9 @@ public class PhaseButtonClick : MonoBehaviour
 
     CapsuleCollider _coll;
     GameManager _gm;
+
+    bool prevMouseDown = false;
+
     //bool isSelected = false;
     int unitId;
     void Start()
@@ -24,21 +27,25 @@ public class PhaseButtonClick : MonoBehaviour
     {
         bool isTouching = false;
         Vector3 touchPos = Vector3.zero;
-// #if !UNITY_ANDROID || UNITY_EDITOR
-//         if (Input.GetMouseButton(0))
-//         {
-//             touchPos = Input.mousePosition;
-//             isTouching = true;
-//         }
-// #else
+#if !UNITY_ANDROID || UNITY_EDITOR
+        if (!Input.GetMouseButton(0) && prevMouseDown)
+        {
+            touchPos = Input.mousePosition;
+            isTouching = _gm.IsTouched(touchPos, _coll);
+        }
+
+        prevMouseDown = Input.GetMouseButton(0);
+#else
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
             touchPos = touch.position;
-            isTouching = _gm.IsTouched(touch,_coll);
-            if(touch.phase ==  TouchPhase.Ended && isTouching){
-                    _gm.IncrementPhase();
-            }                
-        }     
+            isTouching = (touch.phase == TouchPhase.Ended) && _gm.IsTouched(touchPos,_coll);          
+        }
+#endif
+        if (isTouching)
+        {
+            _gm.IncrementPhase();
+        }
     }
 }

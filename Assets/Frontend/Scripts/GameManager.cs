@@ -16,8 +16,6 @@ public class GameManager : MonoBehaviour
     public Transform playerDeck;
     public GameObject[] playerslots;
 
-    public GameObject RulesCanvas;
-
     public GameObject[] handslots;
 
     public GameObject enemyPrefab;
@@ -52,11 +50,12 @@ public class GameManager : MonoBehaviour
     public bool attackedThisTurn = false;
 
     public UnitType[] currImplemented = new UnitType[] { UnitType.Dog, UnitType.Bee, UnitType.Bat, UnitType.Spider };
-    // Start is called before the first frame update
+
+    public SoundEmitter soundEmitter;
+
     void Start()
     {
-        RulesCanvas.transform.position = new Vector3(100000000,100000000,0);
-        for(int i = 0; i < 5; i++)
+        for (int i = 0; i < 5; i++)
         {
             playableSlots[i] = 0;
         }
@@ -74,7 +73,8 @@ public class GameManager : MonoBehaviour
             {
                 enemies = (List<Card>)e.data[0];
                 //print("enemies Count " + enemies.Count);
-                foreach(Card en in enemies){
+                foreach (Card en in enemies)
+                {
                     //print("Enemy id " + en.id);
                 }
                 //Debug.Log(enemies);
@@ -82,7 +82,8 @@ public class GameManager : MonoBehaviour
             if (e.eventType == EventType.HandGiven)
             {
                 hand = (List<Card>)e.data[0];
-                foreach(Card card in hand){
+                foreach (Card card in hand)
+                {
                     //print("player id " + card.id);
                 }
             }
@@ -98,7 +99,6 @@ public class GameManager : MonoBehaviour
         // }
     }
 
-    // Update is called once per frame
     void Update()
     {
         print("phaseChanged: " + PhaseChanged);
@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour
         if (phaseNum == 0 && !PhaseChanged && !transitioning)
         {
             PhaseButton.text = "NEXT";
-            StartCoroutine(PhaseTextChange( "CARD PHASE"));
+            StartCoroutine(PhaseTextChange("CARD PHASE"));
             //attackedThisTurn = false;
         }
         if (phaseNum == 1 && !PhaseChanged && !transitioning)
@@ -124,10 +124,13 @@ public class GameManager : MonoBehaviour
 
     public void IncrementPhase()
     {
+        soundEmitter.PlayButtonSound();
         events = Game.EndPhase();
-        foreach(GameEvent e in events){
-            if(e.eventType == EventType.Error){
-                GiveWarning("You Must Play a Card to Move On",2f);
+        foreach (GameEvent e in events)
+        {
+            if (e.eventType == EventType.Error)
+            {
+                GiveWarning("You Must Play a Card to Move On", 2f);
             }
         }
         if (phaseNum < 2)
@@ -138,11 +141,12 @@ public class GameManager : MonoBehaviour
         {
             phaseNum = 0;
         }
-        if(phaseNum == 2){
+        if (phaseNum == 2)
+        {
             Debug.Log("Is this thing on?");
             EnemyAttack(events);
         }
-        if(phaseNum == 0)
+        if (phaseNum == 0)
         {
             TakeHand();
             Debug.Log("We're so back.");
@@ -178,8 +182,7 @@ public class GameManager : MonoBehaviour
         return collider.Raycast(_ray, out _hit, 1000.0f);
     }
 
-
-    public bool IsTouched(Vector3 mousePos, BoxCollider collider)
+    public bool IsTouched(Vector3 mousePos, Collider collider)
     {
         Ray _ray = Camera.main.ScreenPointToRay(new Vector3(mousePos.x, mousePos.y, 0));
         RaycastHit _hit;
@@ -193,7 +196,8 @@ public class GameManager : MonoBehaviour
         card.GetComponent<CardObject>()._health.text = card.GetComponent<CardObject>().health.ToString();
     }
 
-    public void EnemyAttack(List<GameEvent> events){
+    public void EnemyAttack(List<GameEvent> events)
+    {
         GameObject[] playercards = GameObject.FindGameObjectsWithTag("PlayerCard");
         GameObject[] enemycards = GameObject.FindGameObjectsWithTag("EnemyCard");
         int attackerId;
@@ -201,62 +205,64 @@ public class GameManager : MonoBehaviour
         foreach (GameEvent e in events)
         {
             //Debug.Log(e.eventType);
-            if(e.eventType==EventType.UnitAttacked)
+            if (e.eventType == EventType.UnitAttacked)
             {
                 attackerId = (int)e.data[0];
                 defenderId = (int)e.data[1];
                 DisplayEnemyAttack(attackerId, defenderId);
             }
-            if(e.eventType==EventType.UnitStatChanged)
+            if (e.eventType == EventType.UnitStatChanged)
             {
                 int idToCheck = (int)e.data[0];
-                foreach(GameObject go in playercards)
+                foreach (GameObject go in playercards)
                 {
                     var card = go.GetComponent<CardObject>();
-                    if(idToCheck == card.GetUnitId())
+                    if (idToCheck == card.GetUnitId())
                     {
                         card.UpdateStats((int)(e.data[3]), (int)(e.data[4]));
                         break;
                     }
                 }
-                foreach(GameObject go in enemycards)
+                foreach (GameObject go in enemycards)
                 {
                     Debug.Log("Selected Stats to Change");
                     var card = go.GetComponent<CardObject>();
                     Debug.Log("You asshole.... " + go.GetInstanceID());
-                    if(idToCheck == card.GetUnitId())
+                    if (idToCheck == card.GetUnitId())
                     {
                         card.UpdateStats((int)(e.data[3]), (int)(e.data[4]));
                         break;
                     }
                 }
             }
-            if(e.eventType == EventType.UnitDied)
+            if (e.eventType == EventType.UnitDied)
             {
                 int idToCheck = (int)e.data[0];
-                foreach(GameObject go in playercards)
+                foreach (GameObject go in playercards)
                 {
                     var card = go.GetComponent<CardObject>();
-                    if(idToCheck == card.GetUnitId())
+                    if (idToCheck == card.GetUnitId())
                     {
                         int handSlotToRemove = card.GetUnitSlot();
                         Debug.Log("Play slot please... " + handSlotToRemove.ToString());
                         UpdateGameSlot(handSlotToRemove, false);
                         Destroy(go, animationTime);
+                        soundEmitter.PlaySoundWithDelay(GameSound.Death, animationTime);
                     }
                 }
-                foreach(GameObject go in enemycards)
+                foreach (GameObject go in enemycards)
                 {
                     var card = go.GetComponent<CardObject>();
-                    if(idToCheck == card.GetUnitId())
+                    if (idToCheck == card.GetUnitId())
                     {
                         Destroy(go, animationTime);
+                        soundEmitter.PlaySoundWithDelay(GameSound.Death, animationTime);
                     }
                 }
             }
-            if(e.eventType == EventType.EncounterEnded)
+            if (e.eventType == EventType.EncounterEnded)
             {
-                if((bool)e.data[0])
+                if ((bool)e.data[0])
                 {
                     SceneManager.LoadScene("RewardScene");
                 }
@@ -265,90 +271,105 @@ public class GameManager : MonoBehaviour
                     Debug.Log("joever");
                 }
             }
-            if(e.eventType == EventType.Error)
+            if (e.eventType == EventType.Error)
             {
                 Debug.Log("Everything sucks and I am sad");
             }
-            if(e.eventType == EventType.HandGiven)
+            if (e.eventType == EventType.HandGiven)
             {
                 hand = (List<Card>)e.data[0];
             }
         }
     }
 
-    public void DisplayEnemyAttack(int attackerId, int defenderId){
+    public void DisplayEnemyAttack(int attackerId, int defenderId)
+    {
         GameObject[] playercards = GameObject.FindGameObjectsWithTag("PlayerCard");
         GameObject[] enemycards = GameObject.FindGameObjectsWithTag("EnemyCard");
-        Vector3 attackerPos = new Vector3(0,0,0);
-        Vector3 defenderPos = new Vector3(0,0,0);
+        Vector3 attackerPos = new Vector3(0, 0, 0);
+        Vector3 defenderPos = new Vector3(0, 0, 0);
         GameObject attacker = null;
         GameObject defender = null;
-        foreach(GameObject card in playercards){
-            if(card.GetComponent<CardObject>().GetUnitId() == defenderId){
+        foreach (GameObject card in playercards)
+        {
+            if (card.GetComponent<CardObject>().GetUnitId() == defenderId)
+            {
                 defender = card;
                 defenderPos = card.transform.position;
                 print("card found 1");
                 break;
             }
         }
-        foreach(GameObject card in enemycards){
-            if(card.GetComponent<CardObject>().GetUnitId() == attackerId){
+        foreach (GameObject card in enemycards)
+        {
+            if (card.GetComponent<CardObject>().GetUnitId() == attackerId)
+            {
                 attacker = card;
                 print("card found 2");
                 break;
             }
-        }        
-        if(attacker!=null && defender != null){
+        }
+        if (attacker != null && defender != null)
+        {
             print("both found");
             print(attacker.transform.position);
             attackerPos = attacker.transform.position;
-            StartCoroutine(attackAnimation(attacker,attackerPos,defender));
+            StartCoroutine(attackAnimation(attacker, attackerPos, defender));
         }
-        
+
     }
 
-    public void DisplayPlayerAttack(int attackerId, int defenderId){
+    public void DisplayPlayerAttack(int attackerId, int defenderId)
+    {
         GameObject[] playercards = GameObject.FindGameObjectsWithTag("PlayerCard");
         GameObject[] enemycards = GameObject.FindGameObjectsWithTag("EnemyCard");
-        Vector3 attackerPos = new Vector3(0,0,0);
-        Vector3 defenderPos = new Vector3(0,0,0);
+        Vector3 attackerPos = new Vector3(0, 0, 0);
+        Vector3 defenderPos = new Vector3(0, 0, 0);
         GameObject attacker = null;
         GameObject defender = null;
-        foreach(GameObject card in enemycards){
-            if(card.GetComponent<CardObject>().GetUnitId() == defenderId){
+        foreach (GameObject card in enemycards)
+        {
+            if (card.GetComponent<CardObject>().GetUnitId() == defenderId)
+            {
                 defender = card;
                 defenderPos = card.transform.position;
                 print("card found 1");
                 break;
             }
         }
-        foreach(GameObject card in playercards){
+        foreach (GameObject card in playercards)
+        {
             print(card);
-            if(card != null){
-                if(card.GetComponent<CardObject>().GetUnitId() == attackerId){
+            if (card != null)
+            {
+                if (card.GetComponent<CardObject>().GetUnitId() == attackerId)
+                {
                     attacker = card;
                     print("card found 2");
                     break;
                 }
             }
-        }        
-        if(attacker!=null && defender != null){
+        }
+        if (attacker != null && defender != null)
+        {
             print("both found");
             print(attacker.transform.position);
             attackerPos = attacker.transform.position;
-            StartCoroutine(attackAnimation(attacker,attackerPos,defender));
+            StartCoroutine(attackAnimation(attacker, attackerPos, defender));
         }
-        
+
     }
 
-    IEnumerator attackAnimation(GameObject attacker, Vector3 attackerPos, GameObject defender){
+    IEnumerator attackAnimation(GameObject attacker, Vector3 attackerPos, GameObject defender)
+    {
         print("running animation");
-        StartCoroutine(Lerp(attacker,new Vector3(attackerPos.x,attackerPos.y,attackerPos.z-1f),1f));
+        StartCoroutine(Lerp(attacker, new Vector3(attackerPos.x, attackerPos.y, attackerPos.z - 1f), 1f));
         yield return new WaitForSeconds(1f);
-        StartCoroutine(Lerp(attacker,new Vector3(defender.transform.position.x,defender.transform.position.y+2f,defender.transform.position.z-.01f),.25f));
-        Instantiate(damagePrefab, (defender.transform.position), Quaternion.Euler(0,0,0));
+        StartCoroutine(Lerp(attacker, new Vector3(defender.transform.position.x, defender.transform.position.y + 2f, defender.transform.position.z - .01f), .25f));
+        Instantiate(damagePrefab, (defender.transform.position), Quaternion.Euler(0, 0, 0));
+        soundEmitter.PlayAttackSound();
         yield return new WaitForSeconds(.25f);
-        StartCoroutine(Lerp(attacker,attackerPos,.5f));
+        StartCoroutine(Lerp(attacker, attackerPos, .5f));
         yield return null;
     }
 
@@ -365,28 +386,28 @@ public class GameManager : MonoBehaviour
         bool attackSuccessful = true;
         GameObject[] playercards = GameObject.FindGameObjectsWithTag("PlayerCard");
         GameObject[] enemycards = GameObject.FindGameObjectsWithTag("EnemyCard");
-        events = Game.AttackUnit(attackerId,defenderId);
+        events = Game.AttackUnit(attackerId, defenderId);
         foreach (GameEvent e in events)
         {
             Debug.Log(e.eventType);
-            if(e.eventType==EventType.UnitStatChanged)
+            if (e.eventType == EventType.UnitStatChanged)
             {
                 int idToCheck = (int)e.data[0];
-                foreach(GameObject go in playercards)
+                foreach (GameObject go in playercards)
                 {
                     var card = go.GetComponent<CardObject>();
-                    if(idToCheck == card.GetUnitId())
+                    if (idToCheck == card.GetUnitId())
                     {
                         card.UpdateStats((int)(e.data[3]), (int)(e.data[4]));
                         break;
                     }
                 }
-                foreach(GameObject go in enemycards)
+                foreach (GameObject go in enemycards)
                 {
                     Debug.Log("Selected Stats to Change");
                     var card = go.GetComponent<CardObject>();
                     Debug.Log("You asshole.... " + go.GetInstanceID());
-                    if(idToCheck == card.GetUnitId())
+                    if (idToCheck == card.GetUnitId())
                     {
                         Debug.Log("Health before: " + (e.data[3]));
                         Debug.Log("Health delta: " + (e.data[1]));
@@ -397,31 +418,32 @@ public class GameManager : MonoBehaviour
                     }
                 }
             }
-            if(e.eventType == EventType.UnitDied)
+            if (e.eventType == EventType.UnitDied)
             {
                 int idToCheck = (int)e.data[0];
-                foreach(GameObject go in playercards)
+                foreach (GameObject go in playercards)
                 {
                     var card = go.GetComponent<CardObject>();
-                    if(idToCheck == card.GetUnitId())
+                    if (idToCheck == card.GetUnitId())
                     {
                         int handSlotToRemove = card.GetUnitSlot();
                         Destroy(go, animationTime);
                         UpdateGameSlot(handSlotToRemove, false);
+                        soundEmitter.PlaySoundWithDelay(GameSound.Death, animationTime);
                     }
                 }
-                foreach(GameObject go in enemycards)
+                foreach (GameObject go in enemycards)
                 {
                     var card = go.GetComponent<CardObject>();
-                    if(idToCheck == card.GetUnitId())
+                    if (idToCheck == card.GetUnitId())
                     {
                         Destroy(go, animationTime);
                     }
                 }
             }
-            if(e.eventType == EventType.EncounterEnded)
+            if (e.eventType == EventType.EncounterEnded)
             {
-                if((bool)e.data[0])
+                if ((bool)e.data[0])
                 {
                     SceneManager.LoadScene("RewardScene");
                 }
@@ -430,21 +452,22 @@ public class GameManager : MonoBehaviour
                     Debug.Log("joever");
                 }
             }
-            if(e.eventType == EventType.Error)
+            if (e.eventType == EventType.Error)
             {
                 attackSuccessful = false;
                 Debug.Log("Everything sucks and I am sad");
             }
         }
-        if(attackSuccessful)
+        if (attackSuccessful)
         {
             DisplayPlayerAttack(attackerId, defenderId);
         }
-        
+
         //events = Game.EndPhase();
     }
 
-    public void updateTurnText(){
+    public void updateTurnText()
+    {
         TurnText.text = "Turn: " + (turnNum);
     }
 
@@ -491,10 +514,11 @@ public class GameManager : MonoBehaviour
         int cardId = -1;
         for (int i = 0; i < enemyCardObjs.Length; i++)
         {
-            if(enemyCardObjs[i]!=null){
+            if (enemyCardObjs[i] != null)
+            {
                 card = enemyCardObjs[i];
                 _coll = card.GetComponent<BoxCollider>();
-                if(IsTouched(touch, _coll) && card.tag == "EnemyCard")
+                if (IsTouched(touch, _coll) && card.tag == "EnemyCard")
                 {
                     cardId = card.GetComponent<CardObject>().GetUnitId();
                     break;
@@ -511,7 +535,8 @@ public class GameManager : MonoBehaviour
         int cardId = -1;
         for (int i = 0; i < enemyCardObjs.Length; i++)
         {
-            if(enemyCardObjs[i]!=null){
+            if (enemyCardObjs[i] != null)
+            {
                 card = enemyCardObjs[i];
                 _coll = card.GetComponent<BoxCollider>();
                 if (IsTouched(mousePos, _coll) && card.tag == "EnemyCard")
@@ -541,7 +566,7 @@ public class GameManager : MonoBehaviour
         foreach (Card enemy in enemies)
         {
             //print("enemy "+ enemySlotId);
-            currentCard = Instantiate(enemyPrefab, new Vector3(enemyslots[enemySlotId].transform.position.x, enemyslots[enemySlotId].transform.position.y, enemyslots[enemySlotId].transform.position.z), Quaternion.Euler(0,0,180)); 
+            currentCard = Instantiate(enemyPrefab, new Vector3(enemyslots[enemySlotId].transform.position.x, enemyslots[enemySlotId].transform.position.y, enemyslots[enemySlotId].transform.position.z), Quaternion.Euler(0, 0, 0));
             //Debug.Log(enemy.id);
             //Debug.Log(currentCard);
             currentCard.GetComponent<CardObject>().SetUnitId(enemy.id);
@@ -553,15 +578,17 @@ public class GameManager : MonoBehaviour
             enemySlotId++;
         }
     }
+
     void GenerateHand(List<Card> hand)
     {
         int handslotid = 0;
         GameObject currentCard;
+        soundEmitter.PlayCardSound();
         foreach (Card c in hand)
         {
-            currentCard = Instantiate(cardPrefab, new Vector3(playerDeck.position.x, playerDeck.position.y, playerDeck.position.z), Quaternion.Euler(0, 0, 180));
+            currentCard = Instantiate(cardPrefab, new Vector3(playerDeck.position.x, playerDeck.position.y, playerDeck.position.z), Quaternion.Euler(0, 0, 0));
             currentCard.GetComponent<CardObject>().SetUnitId(c.id);
-            print("cardobj id: "+c.id);
+            print("cardobj id: " + c.id);
             currentCard.tag = "PlayerCard";
             currentCard.GetComponent<CardObject>().SetInHand(true);
             //Debug.Log(c.unitType);
@@ -571,10 +598,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
     void TakeHand()
     {
         GameObject[] inHand = GameObject.FindGameObjectsWithTag("PlayerCard");
+        soundEmitter.PlayCardSound();
         foreach (GameObject c in inHand)
         {
             if (c.GetComponent<CardObject>().GetInHand())
