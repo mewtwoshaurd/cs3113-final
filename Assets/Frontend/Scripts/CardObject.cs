@@ -189,4 +189,14 @@ public class CardObject : MonoBehaviour
         _health.text = healthChange.ToString();
         _attack.text = damageChange.ToString();
     }
+
+    public IEnumerator takeDamage(float timeColorChange){
+        print("color changed");
+        var _renderer = GetComponent<Renderer>();
+        Color damamgeColor = new Color(1f,0f,0f,1f);
+        Color defaultColor  = new Color(1f,1f,1f,1f);
+        _renderer.material.color = damamgeColor;
+        yield return new WaitForSeconds(timeColorChange);
+        _renderer.material.color = defaultColor;
+    }
 }
