@@ -608,6 +608,6 @@ public enum AbilityType
     Wild,           // After attacking, attack and defense stats swap
     Bloodsucker,    // After attacking, regenerate 1 hp
     Lazy,           // Every turn the attack stat gets changed between 0 and the original value
-    Swarm,          // Gets triple the amount of rest per turn
+    Swarm,          // Every turn this unit does not attack they gain +1 attack
     Spikey          // When attacked, deal 1 damage to the attacker
 }
