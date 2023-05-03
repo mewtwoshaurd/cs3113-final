@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     public GameObject[] handslots;
 
     public GameObject enemyPrefab;
+    public GameObject damagePrefab;
 
     public TMPro.TextMeshPro PhaseButton;
     public TMPro.TextMeshProUGUI PhaseText;
@@ -224,17 +225,49 @@ public class GameManager : MonoBehaviour
         
     }
 
+    public void DisplayPlayerAttack(int attackerId, int defenderId){
+        GameObject[] playercards = GameObject.FindGameObjectsWithTag("PlayerCard");
+        GameObject[] enemycards = GameObject.FindGameObjectsWithTag("EnemyCard");
+        Vector3 attackerPos = new Vector3(0,0,0);
+        Vector3 defenderPos = new Vector3(0,0,0);
+        GameObject attacker = null;
+        GameObject defender = null;
+        foreach(GameObject card in enemycards){
+            if(card.GetComponent<CardObject>().GetUnitId() == defenderId){
+                defender = card;
+                defenderPos = card.transform.position;
+                print("card found 1");
+                break;
+            }
+        }
+        foreach(GameObject card in playercards){
+            if(card.GetComponent<CardObject>().GetUnitId() == attackerId){
+                attacker = card;
+                print("card found 2");
+                break;
+            }
+        }        
+        if(attacker!=null && defender != null){
+            print("both found");
+            print(attacker.transform.position);
+            attackerPos = attacker.transform.position;
+            StartCoroutine(attackAnimation(attacker,attackerPos,defender));
+        }
+        
+    }
+
     IEnumerator attackAnimation(GameObject attacker, Vector3 attackerPos, GameObject defender){
         print("running animation");
-        StartCoroutine(Lerp(attacker,new Vector3(attackerPos.x,attackerPos.y,attackerPos.z-1f),10f));
-        new WaitForSeconds(1f);
-        StartCoroutine(Lerp(attacker,defender.transform.position,10f));
-        new WaitForSeconds(1f);
-        StartCoroutine(Lerp(attacker,attackerPos,10f));
+        StartCoroutine(Lerp(attacker,new Vector3(attackerPos.x,attackerPos.y,attackerPos.z-1f),1f));
+        yield return new WaitForSeconds(1f);
+        StartCoroutine(Lerp(attacker,new Vector3(defender.transform.position.x,defender.transform.position.y+2f,defender.transform.position.z-.01f),.25f));
+        Instantiate(damagePrefab, (defender.transform.position), Quaternion.Euler(0,0,0));
+        yield return new WaitForSeconds(.25f);
+        StartCoroutine(Lerp(attacker,attackerPos,.5f));
         yield return null;
     }
 
-    public void AttackEvent(int attackerId, int defenderSlot)
+    public void PlayerAttackEvent(int attackerId, int defenderSlot)
     {
         //print("slot id :" + attackerId);
         //print("defenderslot :" + defenderSlot);
