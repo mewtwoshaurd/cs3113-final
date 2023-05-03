@@ -48,8 +48,8 @@ public static partial class Game
         Random random = new Random();
         foreach (Card unit in enemyUnits)
         {
-            // 1 in 5 chance of having an item
-            int randomNumber = random.Next(0, 5);
+            // 1 in 4 chance of having an item
+            int randomNumber = random.Next(0, 4);
             if (randomNumber == 0)
             {
                 unit.heldItem = Card.ItemCard(CardDicts.unitItemDict[unit.unitType]);
@@ -59,8 +59,25 @@ public static partial class Game
         events.Add(new GameEvent { eventType = EventType.EncounterStarted, data = new List<object> { CardListCopy(enemyUnits) } });
 
         Game.deck = CardListCopy(deck);
-        Game.deck = Game.deck.OrderBy(x => Guid.NewGuid()).ToList();
-        Game.hand = Game.deck.Take(5).ToList();
+
+        // give player 2 units and 3 items. it should be guaranteed they have this
+        hand = new List<Card>();
+        // shuffle deck then separate units and items
+        deck = deck.OrderBy(x => Guid.NewGuid()).ToList();
+        List<Card> unitCards = deck.Where(x => x.cardType == CardType.Unit).ToList();
+        List<Card> itemCards = deck.Where(x => x.cardType == CardType.Item).ToList();
+        // take 2 units and 3 items
+        for (int i = 0; i < 2; i++)
+        {
+            hand.Add(unitCards[i]);
+            deck.Remove(unitCards[i]);
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            hand.Add(itemCards[i]);
+            deck.Remove(itemCards[i]);
+        }
+
         events.Add(new GameEvent { eventType = EventType.HandGiven, data = new List<object> { CardListCopy(Game.hand) } });
 
         return events;
@@ -234,9 +251,31 @@ public static partial class Game
             turn++;
             events.Add(new GameEvent { eventType = EventType.TurnEnded, data = new List<object> { turn } });
             // give hand to player
+            // give 1 unit card (or 0 if there are none) and 2 item cards (or 1 if there is only 1 / 0 if there are none) to player
             deck = deck.OrderBy(x => Guid.NewGuid()).ToList();
-            int cardsToDraw = Math.Min(5, deck.Count);
-            hand = deck.Take(cardsToDraw).ToList();
+
+            hand = new List<Card>();
+            // get lists of units and items in deck
+            List<Card> unitCards = deck.FindAll(x => x.cardType == CardType.Unit);
+            List<Card> itemCards = deck.FindAll(x => x.cardType == CardType.Item);
+            // get 1 unit card
+            if (unitCards.Count > 0)
+            {
+                hand.Add(unitCards[0]);
+                deck.Remove(unitCards[0]);
+            }
+            // get 2 item cards
+            if (itemCards.Count > 0)
+            {
+                hand.Add(itemCards[0]);
+                deck.Remove(itemCards[0]);
+            }
+            if (itemCards.Count > 1)
+            {
+                hand.Add(itemCards[1]);
+                deck.Remove(itemCards[1]);
+            }
+
             events.Add(new GameEvent { eventType = EventType.HandGiven, data = new List<object> { CardListCopy(hand) } });
         }
 
