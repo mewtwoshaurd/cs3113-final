@@ -110,6 +110,8 @@ public class CardObject : MonoBehaviour
                         if (enemyCardId >= 0)
                         {
                             _gm.PlayerAttackEvent(unitId, enemyCardId);
+                            Color defaultColor = new Color(1f, 1f, 1f, 1f);
+                            highlight(defaultColor);
                             //_gm.AttackResults(events);
                             //print("attacked");
                             //attacksPerTurn--;
@@ -122,6 +124,8 @@ public class CardObject : MonoBehaviour
                     else if (isTouching && (_gm.IsTouched(touchPos, _coll)) && !attacking && !isSelected)
                     {
                         print("selecting player");
+                        Color yellowHighlight = new Color(1f,1f,0f,1f);
+                        highlight(yellowHighlight);
                         isSelected = true;
                         attacking = true;
                     }
@@ -132,6 +136,7 @@ public class CardObject : MonoBehaviour
                 break;
         }
     }
+
 
     public void SetUnitId(int id)
     {
@@ -199,6 +204,11 @@ public class CardObject : MonoBehaviour
         _renderer.material.color = damamgeColor;
         yield return new WaitForSeconds(timeColorChange);
         _renderer.material.color = defaultColor;
+    }
+
+    public void highlight(Color newColor){
+        var _renderer = GetComponent<Renderer>();
+        _renderer.material.color = newColor;
     }
 
     public int GetUnitSlot()

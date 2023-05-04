@@ -29,6 +29,8 @@ public class GameManager : MonoBehaviour
     public float animationTime = 3.0f;
     public TMPro.TextMeshProUGUI WarningText;
 
+    public TMPro.TextMeshProUGUI WinLoseText;
+
     public GameObject[] enemyslots;
 
     public GameObject[] enemyCardObjs = new GameObject[5];
@@ -103,6 +105,7 @@ public class GameManager : MonoBehaviour
     {
         print("phaseChanged: " + PhaseChanged);
         print("phase: " + phaseNum);
+        updateTurnText();
         if (phaseNum == 0 && !PhaseChanged && !transitioning)
         {
             PhaseButton.text = "NEXT";
@@ -144,6 +147,7 @@ public class GameManager : MonoBehaviour
         if (phaseNum == 2)
         {
             Debug.Log("Is this thing on?");
+            turnNum++;
             EnemyAttack(events);
         }
         if (phaseNum == 0)
@@ -262,14 +266,17 @@ public class GameManager : MonoBehaviour
             }
             if (e.eventType == EventType.EncounterEnded)
             {
-                if ((bool)e.data[0])
-                {
-                    SceneManager.LoadScene("RewardScene");
+                print((bool)e.data[0]);
+                if((bool)e.data[0]){
+                    WinLoseText.text = "YOU WIN";
+                    SceneManager.LoadScene(2);
                 }
-                else
-                {
-                    Debug.Log("joever");
+                if(!((bool)e.data[0])){
+                    WinLoseText.text = "YOU LOSE";
+                    SceneManager.LoadScene(1);
                 }
+
+                //StartCoroutine(DisplayEndOfEncounter((bool)e.data[0]));
             }
             if (e.eventType == EventType.Error)
             {
@@ -443,14 +450,15 @@ public class GameManager : MonoBehaviour
             }
             if (e.eventType == EventType.EncounterEnded)
             {
-                if ((bool)e.data[0])
-                {
-                    SceneManager.LoadScene("RewardScene");
+                print((bool)e.data[0]);
+                if((bool)e.data[0]){
+                    SceneManager.LoadScene(2);
                 }
-                else
-                {
-                    Debug.Log("joever");
+                if(!((bool)e.data[0])){
+                    WinLoseText.text = "YOU LOSE";
+                    SceneManager.LoadScene(1);
                 }
+                //StartCoroutine(DisplayEndOfEncounter((bool)e.data[0]));
             }
             if (e.eventType == EventType.Error)
             {

@@ -481,7 +481,7 @@ GameObject:
   - component: {fileID: 593513860}
   - component: {fileID: 593513859}
   m_Layer: 5
-  m_Name: Unknown Text
+  m_Name: Win/Lose Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -536,8 +536,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4287017365
+  m_fontColor: {r: 0.58431375, g: 0.69411767, b: 0.5254902, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -560,7 +560,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -2725,7 +2725,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2454884638125579698, guid: ec6178febf45a184a928718d4ac2cf6a, type: 3}
       propertyPath: turnNum
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2454884638125579698, guid: ec6178febf45a184a928718d4ac2cf6a, type: 3}
       propertyPath: TurnText
