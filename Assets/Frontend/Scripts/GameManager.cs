@@ -21,6 +21,8 @@ public class GameManager : MonoBehaviour
     public GameObject enemyPrefab;
     public GameObject damagePrefab;
 
+    public GameObject selectedItem = null;
+
     public TMPro.TextMeshPro PhaseButton;
     public TMPro.TextMeshProUGUI PhaseText;
 
@@ -124,16 +126,19 @@ public class GameManager : MonoBehaviour
             PhaseButton.text = "NEXT";
             StartCoroutine(PhaseTextChange("CARD PHASE"));
             //attackedThisTurn = false;
+            print("phaseNum: " + phaseNum);
         }
         if (phaseNum == 1 && !PhaseChanged && !transitioning)
         {
             PhaseButton.text = "END";
             StartCoroutine(PhaseTextChange("ATTACK PHASE"));
+            print("phaseNum: " + phaseNum);
         }
         if (phaseNum == 2 && !PhaseChanged && !transitioning)
         {
             PhaseButton.text = "NEXT";
             StartCoroutine(PhaseTextChange("ENEMY PHASE"));
+            print("phaseNum: " + phaseNum);
         }
 
     }
@@ -153,15 +158,14 @@ public class GameManager : MonoBehaviour
         {
             phaseNum++;
         }
-        else
-        {
-            phaseNum = 0;
-        }
         if (phaseNum == 2)
         {
             //Debug.Log("Is this thing on?");
             turnNum++;
             EnemyAttack(events);
+            PhaseChanged=true;
+            PhaseChanged=true;
+            phaseNum=0;
         }
         if (phaseNum == 0)
         {
@@ -352,6 +356,18 @@ public class GameManager : MonoBehaviour
         IncrementPhase();
     }
 
+    
+
+    public void attachItemToCard(GameObject card){
+        print("should lerp");
+        if(selectedItem.GetComponent<CardObject>().parentCard==null &&card.GetComponent<CardObject>().item==null){
+            StartCoroutine(Lerp(selectedItem,new Vector3(card.transform.position.x,card.transform.position.y-2f,card.transform.position.z-.02f),1f));
+            Game.AttachItem(card.GetComponent<CardObject>().GetUnitId(), selectedItem.GetComponent<CardObject>().GetUnitId());
+            selectedItem.GetComponent<CardObject>().parentCard = card;
+            card.GetComponent<CardObject>().item = selectedItem;
+        }
+        
+    }
     IEnumerator DisplayEndEncounter(bool won){
         if(won){
             WinLoseText.color = new Color(0f,1f,0f,1f);
@@ -687,6 +703,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
     public int IsTouchingEnemyCard(Vector3 mousePos)
     {
         BoxCollider _coll;
@@ -790,6 +807,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator Lerp(GameObject obj, Vector3 end, float duration)
     {
+        print("lerping" + obj + " " + end);
         float time = 0;
         Vector3 start = obj.transform.position;
         while (time < duration)

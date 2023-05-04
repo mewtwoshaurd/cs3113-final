@@ -17,11 +17,15 @@ public class CardObject : MonoBehaviour
     public float cardOffset = -0.1f;
     public GameObject textureUtil;
     GameManager _gm;
+
+    public GameObject parentCard = null;
     public int unitId;
     bool isSelected = false;
 
     Touch touch;
     bool isPlayed = false;
+
+    bool itemSelected = false;
     int slotid = -1;
 
     int permaSlotId = -1;
@@ -29,6 +33,8 @@ public class CardObject : MonoBehaviour
     bool inHand = false;
 
     bool isOfUnit = false;
+
+    public GameObject item = null;
     int enemyCardId = 0;
     UnitType utype;
 
@@ -89,43 +95,51 @@ public class CardObject : MonoBehaviour
         switch (phaseNum)
         {
             case 0:
-                slotid = _gm.IsTouchingPlayerSlot(touchPos);
-                int playerCardId;
-                Vector3 playerCardLoc;
-                _gm.IsTouchingPlayerCard(touch, out playerCardId, out playerCardLoc);
-                if (isTouching && (_gm.IsTouched(touchPos, _coll) && !isPlayed))
-                {
-                    //Debug.Log("selected!");
-                    isSelected = true;
+                if ((tag == "PlayerCard")){
+                    slotid = _gm.IsTouchingPlayerSlot(touchPos);
+                    int playerCardId;
+                    Vector3 playerCardLoc;
+                    _gm.IsTouchingPlayerCard(touch, out playerCardId, out playerCardLoc);
+                    if (isTouching && (_gm.IsTouched(touchPos, _coll) && !isPlayed))
+                    {
+                        //Debug.Log("selected!");
+                        isSelected = true;
+                    }
+                    else if (isOfUnit && isTouching && isSelected && (slotid >= 0) && !isPlayed && _gm.IsGameSlotOpen(slotid))
+                    {
+                        //Debug.Log("play!");
+                        Transform slotTrans = _gm.playerslots[slotid].transform;
+                        Vector3 newPos = new Vector3(slotTrans.position.x, slotTrans.position.y, slotTrans.position.z + cardOffset);
+                        transform.position = newPos;
+                        isSelected = false;
+                        isPlayed = true;
+                        inHand = false;
+                        Game.PlayUnit(unitId);
+                        soundEmitter.PlayCardSound();
+                        _gm.UpdateGameSlot(slotid, isPlayed);
+                        permaSlotId = slotid;
+                    }
+                    else if (isTouching && !(_gm.IsTouched(touchPos, _coll)) && !isPlayed)
+                    {
+                        //Debug.Log("unselected!");
+                        isSelected = false;
+                    }
+                    if (!isOfUnit && (_gm.IsTouched(touchPos, _coll)))
+                    {
+                        print("touching Item");
+                        //transform.position = playerCardLoc;
+                        isSelected = false;
+                        isPlayed = true;
+                        inHand = false;
+                        _gm.selectedItem = gameObject;
+                        soundEmitter.PlayCardSound();
+                    }
+                    if(isOfUnit && isPlayed &&(_gm.IsTouched(touchPos, _coll)) && item==null && (_gm.selectedItem!=null)){
+
+                        _gm.attachItemToCard(gameObject);
+                    }
                 }
-                else if (isOfUnit && isTouching && isSelected && (slotid >= 0) && !isPlayed && _gm.IsGameSlotOpen(slotid))
-                {
-                    //Debug.Log("play!");
-                    Transform slotTrans = _gm.playerslots[slotid].transform;
-                    Vector3 newPos = new Vector3(slotTrans.position.x, slotTrans.position.y, slotTrans.position.z + cardOffset);
-                    transform.position = newPos;
-                    isSelected = false;
-                    isPlayed = true;
-                    inHand = false;
-                    Game.PlayUnit(unitId);
-                    soundEmitter.PlayCardSound();
-                    _gm.UpdateGameSlot(slotid, isPlayed);
-                    permaSlotId = slotid;
-                }
-                else if (!isOfUnit && isTouching && isSelected && (playerCardId >= 0))
-                {
-                    transform.position = playerCardLoc;
-                    isSelected = false;
-                    isPlayed = true;
-                    inHand = false;
-                    Game.AttachItem(playerCardId, unitId);
-                    soundEmitter.PlayCardSound();
-                }
-                else if (isTouching && !(_gm.IsTouched(touchPos, _coll)) && !isPlayed)
-                {
-                    //Debug.Log("unselected!");
-                    isSelected = false;
-                }
+                
                 break;
             case 1:
                 if ((tag == "PlayerCard"))
