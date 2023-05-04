@@ -167,6 +167,7 @@ public class CardObject : MonoBehaviour
     }
 
 
+    
     public void SetUnitId(int id)
     {
         unitId = id;

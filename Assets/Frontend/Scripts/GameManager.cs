@@ -328,12 +328,14 @@ public class GameManager : MonoBehaviour
             {
                 print((bool)e.data[0]);
                 if((bool)e.data[0]){
+                    print("won");
                     WinLoseText.text = "YOU WIN";
-                    SceneManager.LoadScene(2);
+                    StartCoroutine(DisplayEndEncounter(true));
                 }
                 if(!((bool)e.data[0])){
+                    print("lose");
                     WinLoseText.text = "YOU LOSE";
-                    SceneManager.LoadScene(1);
+                    StartCoroutine(DisplayEndEncounter(false));
                 }
 
                 //StartCoroutine(DisplayEndOfEncounter((bool)e.data[0]));
@@ -348,6 +350,21 @@ public class GameManager : MonoBehaviour
             }
         }
         IncrementPhase();
+    }
+
+    IEnumerator DisplayEndEncounter(bool won){
+        if(won){
+            WinLoseText.color = new Color(0f,1f,0f,1f);
+            WinLoseText.text = "YOU WON";
+            yield return new WaitForSeconds(2f);
+            SceneManager.LoadScene(2);    
+        }
+        else{
+            WinLoseText.color = new Color(1f,0f,0f,1f);
+            WinLoseText.text = "YOU LOSE";
+            yield return new WaitForSeconds(2f);
+            SceneManager.LoadScene(1);
+        }
     }
 
     public void DisplayEnemyAttack(int attackerId, int defenderId)
@@ -561,11 +578,14 @@ public class GameManager : MonoBehaviour
             {
                 print((bool)e.data[0]);
                 if((bool)e.data[0]){
-                    SceneManager.LoadScene(2);
+                    print("won");
+                    StartCoroutine(DisplayEndEncounter(true));
                 }
                 if(!((bool)e.data[0])){
+                    print("lose");
                     WinLoseText.text = "YOU LOSE";
-                    SceneManager.LoadScene(1);
+                    //SceneManager.LoadScene(1);
+                    StartCoroutine(DisplayEndEncounter(false));
                 }
                 //StartCoroutine(DisplayEndOfEncounter((bool)e.data[0]));
             }
