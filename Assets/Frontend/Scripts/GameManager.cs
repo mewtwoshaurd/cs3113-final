@@ -45,28 +45,41 @@ public class GameManager : MonoBehaviour
 
     public int turnNum = 1;
 
+    public TMPro.TextMeshProUGUI AbilityActivated;
 
+    public TMPro.TextMeshProUGUI ItemActivated;
     List<Card> hand = new List<Card>();
     List<GameEvent> events = new List<GameEvent>();
 
     public bool attackedThisTurn = false;
 
-    public UnitType[] currImplemented = new UnitType[] { UnitType.Dog, UnitType.Bee, UnitType.Bat, UnitType.Spider };
+    public UnitType[] currImplementedUnits = new UnitType[] { UnitType.Dog, UnitType.Bee, UnitType.Bat, UnitType.Spider };
+    public ItemType[] currImplementedItems = new ItemType[] { ItemType.SmokeBomb, ItemType.Apple};
 
     public SoundEmitter soundEmitter;
 
     void Start()
-    {
+    {   
+        AbilityActivated.text = "";
+        ItemActivated.text = "";
         for (int i = 0; i < 5; i++)
         {
             playableSlots[i] = 0;
         }
-        UnitType randtype;
-        for (int i = 0; i < 20; i++)
+        UnitType randtypeU;
+        for (int i = 0; i < 10; i++)
         {
-            int rand = UnityEngine.Random.Range(0, 4);
-            randtype = currImplemented[rand];
-            deck.Add(Card.UnitCard(randtype));
+            int randu = UnityEngine.Random.Range(0, 4);
+            randtypeU = currImplementedUnits[randu];
+            deck.Add(Card.UnitCard(randtypeU));
+        }
+        //ItemType randtypeI;
+        for (int i = 0; i < 10; i++)
+        {
+            /*int randi = UnityEngine.Random.Range(0, 1);
+            Debug.Log(randi);
+            randtypeI = currImplementedItems[randi];*/
+            deck.Add(Card.ItemCard(ItemType.Apple));
         }
         events = Game.StartEncounter(deck, UnitType.Dog);
         foreach (GameEvent e in events)
@@ -86,7 +99,7 @@ public class GameManager : MonoBehaviour
                 hand = (List<Card>)e.data[0];
                 foreach (Card card in hand)
                 {
-                    //print("player id " + card.id);
+                    Debug.Log(card.cardType);
                 }
             }
             //print(e);
@@ -146,14 +159,14 @@ public class GameManager : MonoBehaviour
         }
         if (phaseNum == 2)
         {
-            Debug.Log("Is this thing on?");
+            //Debug.Log("Is this thing on?");
             turnNum++;
             EnemyAttack(events);
         }
         if (phaseNum == 0)
         {
             TakeHand();
-            Debug.Log("We're so back.");
+            //Debug.Log("We're so back.");
             GenerateHand(hand);
         }
         PhaseChanged = !PhaseChanged;
@@ -229,9 +242,9 @@ public class GameManager : MonoBehaviour
                 }
                 foreach (GameObject go in enemycards)
                 {
-                    Debug.Log("Selected Stats to Change");
+                    //Debug.Log("Selected Stats to Change");
                     var card = go.GetComponent<CardObject>();
-                    Debug.Log("You asshole.... " + go.GetInstanceID());
+                    //Debug.Log("You asshole.... " + go.GetInstanceID());
                     if (idToCheck == card.GetUnitId())
                     {
                         card.UpdateStats((int)(e.data[3]), (int)(e.data[4]));
@@ -248,7 +261,7 @@ public class GameManager : MonoBehaviour
                     if (idToCheck == card.GetUnitId())
                     {
                         int handSlotToRemove = card.GetUnitSlot();
-                        Debug.Log("Play slot please... " + handSlotToRemove.ToString());
+                        //Debug.Log("Play slot please... " + handSlotToRemove.ToString());
                         UpdateGameSlot(handSlotToRemove, false);
                         Destroy(go, animationTime);
                         soundEmitter.PlaySoundWithDelay(GameSound.Death, animationTime);
@@ -262,6 +275,53 @@ public class GameManager : MonoBehaviour
                         Destroy(go, animationTime);
                         soundEmitter.PlaySoundWithDelay(GameSound.Death, animationTime);
                     }
+                }
+            }
+            if (e.eventType == EventType.UnitAbilityActivation)
+            {
+                Debug.Log("Did anything even happen?");
+                int idToCheck = (int)e.data[0];
+                UnitType unitAbility = UnitType.NotApplicable;
+                string abilityName = null;
+                foreach (GameObject go in playercards)
+                {
+                    var card = go.GetComponent<CardObject>();
+                    if (idToCheck == card.GetUnitId())
+                    {
+                        Debug.Log("found!");
+                        unitAbility = card.GetUnitType();
+                        Debug.Log("found: " + unitAbility.ToString());
+                        break;
+                    }
+                }
+                foreach (GameObject go in enemycards)
+                {
+                    var card = go.GetComponent<CardObject>();
+                    if (idToCheck == card.GetUnitId())
+                    {
+                       unitAbility = card.GetUnitType();
+                       break;
+                    }
+                }
+                if(unitAbility == UnitType.NotApplicable)
+                {
+                    Debug.Log("Something went wrong...");
+                    continue;
+                }
+                else
+                {
+                    Debug.Log("Found ability!");
+                    abilityName = ToAbility(CardDicts.unitAbilityDict[unitAbility]);
+                }
+                
+                if(abilityName == null)
+                {
+                    continue;
+                }
+                else
+                {
+                    Debug.Log("Where's the text!");
+                    StartCoroutine(AbilityActivates(abilityName));
                 }
             }
             if (e.eventType == EventType.EncounterEnded)
@@ -287,6 +347,7 @@ public class GameManager : MonoBehaviour
                 hand = (List<Card>)e.data[0];
             }
         }
+        IncrementPhase();
     }
 
     public void DisplayEnemyAttack(int attackerId, int defenderId)
@@ -380,6 +441,8 @@ public class GameManager : MonoBehaviour
         yield return null;
     }
 
+    //IEnumerator attachAnimation(GameObject )
+
     public void PlayerAttackEvent(int attackerId, int defenderId)
     {
         //print("slot id :" + attackerId);
@@ -411,15 +474,15 @@ public class GameManager : MonoBehaviour
                 }
                 foreach (GameObject go in enemycards)
                 {
-                    Debug.Log("Selected Stats to Change");
+                    //Debug.Log("Selected Stats to Change");
                     var card = go.GetComponent<CardObject>();
-                    Debug.Log("You asshole.... " + go.GetInstanceID());
+                    //Debug.Log("You asshole.... " + go.GetInstanceID());
                     if (idToCheck == card.GetUnitId())
                     {
-                        Debug.Log("Health before: " + (e.data[3]));
-                        Debug.Log("Health delta: " + (e.data[1]));
-                        Debug.Log("Attack before: " + e.data[4]);
-                        Debug.Log("Attack delta: " + e.data[2]);
+                        //Debug.Log("Health before: " + (e.data[3]));
+                        //Debug.Log("Health delta: " + (e.data[1]));
+                        //Debug.Log("Attack before: " + e.data[4]);
+                        //Debug.Log("Attack delta: " + e.data[2]);
                         card.UpdateStats((int)(e.data[3]), (int)(e.data[4]));
                         break;
                     }
@@ -437,6 +500,7 @@ public class GameManager : MonoBehaviour
                         Destroy(go, animationTime);
                         UpdateGameSlot(handSlotToRemove, false);
                         soundEmitter.PlaySoundWithDelay(GameSound.Death, animationTime);
+                        break;
                     }
                 }
                 foreach (GameObject go in enemycards)
@@ -445,7 +509,52 @@ public class GameManager : MonoBehaviour
                     if (idToCheck == card.GetUnitId())
                     {
                         Destroy(go, animationTime);
+                        break;
                     }
+                }
+            }
+            if (e.eventType == EventType.UnitAbilityActivation)
+            {
+                Debug.Log("Did anything even happen?");
+                int idToCheck = (int)e.data[0];
+                UnitType unitAbility = UnitType.NotApplicable;
+                string abilityName = null;
+                foreach (GameObject go in playercards)
+                {
+                    var card = go.GetComponent<CardObject>();
+                    if (idToCheck == card.GetUnitId())
+                    {
+                        unitAbility = card.GetUnitType();
+                        break;
+                    }
+                }
+                foreach (GameObject go in enemycards)
+                {
+                    var card = go.GetComponent<CardObject>();
+                    if (idToCheck == card.GetUnitId())
+                    {
+                       unitAbility = card.GetUnitType();
+                       break;
+                    }
+                }
+                if(unitAbility == UnitType.NotApplicable)
+                {
+                    continue;
+                }
+                else
+                {
+                    Debug.Log("Found ability!");
+                    abilityName = ToAbility(CardDicts.unitAbilityDict[unitAbility]);
+                }
+                
+                if(abilityName == null)
+                {
+                    continue;
+                }
+                else
+                {
+                    Debug.Log("Where's the text!");
+                    StartCoroutine(AbilityActivates(abilityName));
                 }
             }
             if (e.eventType == EventType.EncounterEnded)
@@ -536,6 +645,28 @@ public class GameManager : MonoBehaviour
         return cardId;
     }
 
+    public void IsTouchingPlayerCard(Touch touch, out int cardId, out Vector3 cardLoc)
+    {
+        BoxCollider _coll;
+        cardId = -1;
+        cardLoc = new Vector3();
+        GameObject[] playercards = GameObject.FindGameObjectsWithTag("PlayerCard");
+        foreach (GameObject go in playercards)
+        {
+            var card = go.GetComponent<CardObject>();
+            if (card.IsPlayed())
+            {
+                _coll = go.GetComponent<BoxCollider>();
+                if (IsTouched(touch, _coll))
+                {
+                    cardId = card.GetUnitId();
+                    cardLoc = go.GetComponent<Rigidbody>().transform.position;
+                    break;
+                }
+            }
+        }
+    }
+
     public int IsTouchingEnemyCard(Vector3 mousePos)
     {
         BoxCollider _coll;
@@ -580,7 +711,7 @@ public class GameManager : MonoBehaviour
             currentCard.GetComponent<CardObject>().SetUnitId(enemy.id);
             //print("enemy cardobj id: "+currentCard.GetComponent<CardObject>().unitId);
             currentCard.tag = "EnemyCard";
-            currentCard.GetComponent<CardObject>().SetUnitType(enemy.unitType);
+            currentCard.GetComponent<CardObject>().SetType(enemy.unitType, enemy.itemType);
             enemyCardObjs[enemySlotId] = currentCard;
             StartCoroutine(Lerp(currentCard, new Vector3(enemyslots[enemySlotId].transform.position.x, enemyslots[enemySlotId].transform.position.y, enemyslots[enemySlotId].transform.position.z - .1f), 1f));
             enemySlotId++;
@@ -595,12 +726,11 @@ public class GameManager : MonoBehaviour
         foreach (Card c in hand)
         {
             currentCard = Instantiate(cardPrefab, new Vector3(playerDeck.position.x, playerDeck.position.y, playerDeck.position.z), Quaternion.Euler(0, 0, 0));
-            currentCard.GetComponent<CardObject>().SetUnitId(c.id);
-            print("cardobj id: " + c.id);
             currentCard.tag = "PlayerCard";
+            currentCard.GetComponent<CardObject>().SetUnitId(c.id);
             currentCard.GetComponent<CardObject>().SetInHand(true);
-            //Debug.Log(c.unitType);
-            currentCard.GetComponent<CardObject>().SetUnitType(c.unitType);
+            Debug.Log("In Generate Hand: " + c.unitType + "," + c.itemType);
+            currentCard.GetComponent<CardObject>().SetType(c.unitType, c.itemType);
             StartCoroutine(Lerp(currentCard, new Vector3(handslots[handslotid].transform.position.x, handslots[handslotid].transform.position.y, handslots[handslotid].transform.position.z - .01f), 1f));
             handslotid += 1;
         }
@@ -673,6 +803,63 @@ public class GameManager : MonoBehaviour
         {
             return true;
         }
+    }
+
+    public string ToAbility(AbilityType abilityT)
+    {
+        if(abilityT == AbilityType.None)
+        {
+            return "None";
+        }
+        else if(abilityT == AbilityType.Bloodsucker)
+        {
+            return "Bloodsucker";
+        }
+        else if(abilityT == AbilityType.Lazy)
+        {
+            return "Lazy";
+        }
+        else if(abilityT == AbilityType.Swarm)
+        {
+            return "Swarm";
+        }
+        else if(abilityT == AbilityType.Spikey)
+        {
+            return "Spikey";
+        }
+        else if(abilityT == AbilityType.Wild)
+        {
+            return "Wild";
+        }
+        else if(abilityT == AbilityType.Curse)
+        {
+            return "Curse";
+        }
+        else if(abilityT == AbilityType.Intimidate)
+        {
+            return "Intimidate";
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public IEnumerator AbilityActivates(string ability)
+    {
+        soundEmitter.PlayAbilitySound();
+        AbilityActivated.text = "ABILITY: ";
+        AbilityActivated.text += ability;
+        yield return new WaitForSeconds(2.0f);
+        AbilityActivated.text = "";
+    }
+    public IEnumerator ItemActivates(string item)
+    {
+        soundEmitter.PlayAbilitySound();
+        ItemActivated.text = "ITEM: ";
+        ItemActivated.text += item;
+        yield return new WaitForSeconds(2.0f);
+        ItemActivated.text = "";
     }
 
 }

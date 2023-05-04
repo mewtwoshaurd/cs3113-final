@@ -15,19 +15,24 @@ public class CardObject : MonoBehaviour
     //public float speed = 1;
     //public float maxSpeed = 10;
     public float cardOffset = -0.1f;
-    public Material[] mats;
+    public GameObject textureUtil;
     GameManager _gm;
     public int unitId;
     bool isSelected = false;
 
+    Touch touch;
     bool isPlayed = false;
     int slotid = -1;
 
     int permaSlotId = -1;
     //int enemyCardSlot = -1;
     bool inHand = false;
+
+    bool isOfUnit = false;
     int enemyCardId = 0;
-    UnitType type;
+    UnitType utype;
+
+    ItemType itype;
     public int health;
     public TMPro.TextMeshProUGUI _health;
     public TMPro.TextMeshProUGUI _attack;
@@ -37,6 +42,9 @@ public class CardObject : MonoBehaviour
 
     public static bool attacking = false;
 
+    //bool isEmitting = false;
+    
+    //float waitTime = 0.5f;
     SoundEmitter soundEmitter;
 
     int phaseNum = 0;
@@ -51,6 +59,14 @@ public class CardObject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(isSelected)
+        {
+            StartCoroutine(waitForHighlight());
+        }
+        else
+        {
+            _mr.material.DisableKeyword("_EMISSION");
+        }
         bool isTouching = false;
         Vector3 touchPos = Vector3.zero;
 #if !UNITY_ANDROID || UNITY_EDITOR
@@ -62,23 +78,27 @@ public class CardObject : MonoBehaviour
 #else
         if (Input.touchCount > 0)
         {
-            Touch touch = Input.GetTouch(0);
+            touch = Input.GetTouch(0);
             touchPos = touch.position;
             isTouching = (touch.phase == TouchPhase.Began);
         }
 #endif
+
         //slotid = _gm.IsTouchingPlayerSlot(touchPos);
         phaseNum = _gm.currentPhase();
         switch (phaseNum)
         {
             case 0:
                 slotid = _gm.IsTouchingPlayerSlot(touchPos);
+                int playerCardId;
+                Vector3 playerCardLoc;
+                _gm.IsTouchingPlayerCard(touch, out playerCardId, out playerCardLoc);
                 if (isTouching && (_gm.IsTouched(touchPos, _coll) && !isPlayed))
                 {
                     //Debug.Log("selected!");
                     isSelected = true;
                 }
-                else if (isTouching && isSelected && (slotid >= 0) && !isPlayed && _gm.IsGameSlotOpen(slotid))
+                else if (isOfUnit && isTouching && isSelected && (slotid >= 0) && !isPlayed && _gm.IsGameSlotOpen(slotid))
                 {
                     //Debug.Log("play!");
                     Transform slotTrans = _gm.playerslots[slotid].transform;
@@ -92,6 +112,15 @@ public class CardObject : MonoBehaviour
                     _gm.UpdateGameSlot(slotid, isPlayed);
                     permaSlotId = slotid;
                 }
+                else if (!isOfUnit && isTouching && isSelected && (playerCardId >= 0))
+                {
+                    transform.position = playerCardLoc;
+                    isSelected = false;
+                    isPlayed = true;
+                    inHand = false;
+                    Game.AttachItem(playerCardId, unitId);
+                    soundEmitter.PlayCardSound();
+                }
                 else if (isTouching && !(_gm.IsTouched(touchPos, _coll)) && !isPlayed)
                 {
                     //Debug.Log("unselected!");
@@ -103,7 +132,7 @@ public class CardObject : MonoBehaviour
                 {
                     //slotid = _gm.IsTouchingPlayerSlot(touchPos);
 
-                    if (isTouching && !(_gm.IsTouched(touchPos, _coll)) && isSelected)
+                    if (isOfUnit && isTouching && !(_gm.IsTouched(touchPos, _coll)) && isSelected)
                     {
                         //print("selecting enemy");
                         enemyCardId = _gm.IsTouchingEnemyCard(touchPos);
@@ -121,7 +150,7 @@ public class CardObject : MonoBehaviour
                         isSelected = false;
                     }
 
-                    else if (isTouching && (_gm.IsTouched(touchPos, _coll)) && !attacking && !isSelected)
+                    else if (isOfUnit && isTouching && (_gm.IsTouched(touchPos, _coll)) && !attacking && !isSelected)
                     {
                         print("selecting player");
                         Color yellowHighlight = new Color(1f,1f,0f,1f);
@@ -158,14 +187,32 @@ public class CardObject : MonoBehaviour
         return inHand;
     }
 
-    public void SetUnitType(UnitType newtype)
+    public void SetType(UnitType newtypeU, ItemType newtypeI)
     {
-        type = newtype;
         _mr = GetComponent<Renderer>();
-        _health.text = CardDicts.unitHealthDict[newtype].ToString();
-        health = CardDicts.unitHealthDict[newtype];
-        _attack.text = CardDicts.unitDamageDict[newtype].ToString();
-        var _mrcopy = _mr.materials;
+        Material mat;
+        Debug.Log(newtypeU);
+        Debug.Log(newtypeI);
+        if(newtypeI == ItemType.NotApplicable)
+        {
+            _health.text = CardDicts.unitHealthDict[newtypeU].ToString();
+            utype = newtypeU;
+            health = CardDicts.unitHealthDict[newtypeU];
+            _attack.text = CardDicts.unitDamageDict[newtypeU].ToString();
+            mat = textureUtil.GetComponent<CardToTextureUtility>().getUnitMat(newtypeU);
+            _mr.material = mat;
+            isOfUnit = true;
+        }
+        else
+        {
+            _health.text = "";
+            //health
+            itype = newtypeI;
+            _attack.text = "";
+            mat = textureUtil.GetComponent<CardToTextureUtility>().getItemMat(newtypeI);
+            _mr.material = mat;
+        }
+        /*var _mrcopy = _mr.materials;
         if (newtype == UnitType.Bat)
         {
             _mrcopy[0] = mats[0];
@@ -187,7 +234,7 @@ public class CardObject : MonoBehaviour
             _mrcopy[0] = mats[3];
             //_name.text = "Spider";
         }
-        _mr.materials = _mrcopy;
+        _mr.materials = _mrcopy;*/
     }
 
     public void UpdateStats(int healthChange, int damageChange)
@@ -211,8 +258,39 @@ public class CardObject : MonoBehaviour
         _renderer.material.color = newColor;
     }
 
+
+    public IEnumerator waitForHighlight()
+    {
+        yield return StartCoroutine(selectionhighlight());
+    }
+    public IEnumerator selectionhighlight()
+    {
+        _mr.material.EnableKeyword("_EMISSION");
+        _mr.material.SetColor("_EmissionColor", Color.white);
+        yield return new WaitForSeconds(1.0f);
+        //Debug.Log("does this work?");
+        _mr.material.DisableKeyword("_EMISSION");
+        yield return new WaitForSeconds(3.0f);
+        //Debug.Log("heheh");
+    }
+
     public int GetUnitSlot()
     {
         return permaSlotId;
+    }
+
+    public UnitType GetUnitType()
+    {
+        return utype;
+    }
+
+    public ItemType GetItemType()
+    {
+        return itype;
+    }
+
+    public bool IsPlayed()
+    {
+        return isPlayed;
     }
 }
