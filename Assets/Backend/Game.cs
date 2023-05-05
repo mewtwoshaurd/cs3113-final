@@ -295,6 +295,8 @@ public static partial class Game
                 RemoveFromList(deck, itemCards[1].id);
             }
 
+            hand = hand.Distinct().ToList();
+
             events.Add(new GameEvent { eventType = EventType.HandGiven, data = new List<object> { CardListCopy(hand) } });
         }
 
