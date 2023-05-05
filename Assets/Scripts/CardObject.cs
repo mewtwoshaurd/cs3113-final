@@ -186,8 +186,8 @@ public class CardObject : MonoBehaviour
                     else if (isOfUnit && isTouching && (_gm.IsTouched(touchPos, _coll)) && !attacking && !isSelected)
                     {
                         //Debug.Log("selecting player");
-                        Color yellowHighlight = new Color(1f,1f,0f,1f);
-                        highlight(yellowHighlight);
+                        // Color yellowHighlight = new Color(1f,1f,0f,1f);
+                        // highlight(yellowHighlight);
                         isSelected = true;
                         attacking = true;
                     }
