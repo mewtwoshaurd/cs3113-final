@@ -165,9 +165,12 @@ public class CardObject : MonoBehaviour
                     if (isOfUnit && isTouching && !(_gm.IsTouched(touchPos, _coll)) && isSelected)
                     {
                         //print("selecting enemy");
+                        
                         enemyCardId = _gm.IsTouchingEnemyCard(touchPos);
                         if (enemyCardId >= 0)
                         {
+                            Debug.Log(unitId);
+                            Debug.Log(enemyCardId);
                             _gm.PlayerAttackEvent(unitId, enemyCardId);
                             Color defaultColor = new Color(1f, 1f, 1f, 1f);
                             highlight(defaultColor);

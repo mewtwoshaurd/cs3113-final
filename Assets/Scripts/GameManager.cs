@@ -161,6 +161,10 @@ public class GameManager : MonoBehaviour
             {
                 GiveWarning("You Must Play a Card to Move On", 2f);
             }
+            if (e.eventType == EventType.HandGiven)
+            {
+                hand = (List<Card>)e.data[0];
+            }
         }
         if (phaseNum < 2)
         {
@@ -412,10 +416,12 @@ public class GameManager : MonoBehaviour
             {
                 Debug.Log("Everything sucks and I am sad");
             }
-            if (e.eventType == EventType.HandGiven)
+            /*if (e.eventType == EventType.HandGiven)
             {
+                Debug.Log("did this occur?");
                 hand = (List<Card>)e.data[0];
-            }
+                Debug.Log(hand);
+            }*/
         }
         //IncrementPhase();
     }
@@ -900,6 +906,7 @@ public class GameManager : MonoBehaviour
         {
             currentCard = Instantiate(cardPrefab, new Vector3(playerDeck.position.x, playerDeck.position.y, playerDeck.position.z), Quaternion.Euler(0, 0, 0));
             currentCard.tag = "PlayerCard";
+            Debug.Log(c.id);
             currentCard.GetComponent<CardObject>().SetUnitId(c.id);
             currentCard.GetComponent<CardObject>().SetInHand(true);
             Debug.Log("In Generate Hand: " + c.unitType + "," + c.itemType);
