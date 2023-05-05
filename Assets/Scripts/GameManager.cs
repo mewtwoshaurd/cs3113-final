@@ -71,7 +71,7 @@ public class GameManager : MonoBehaviour
         UnitType randtypeU;
         int randu = UnityEngine.Random.Range(0, 4);
         randtypeU = currImplementedUnits[randu];
-        Debug.Log(randtypeU);
+        //Debug.Log(randtypeU);
         deck = DeckManager.playerDeck;
         events = Game.StartEncounter(deck, randtypeU);
         foreach (GameEvent e in events)
@@ -88,13 +88,13 @@ public class GameManager : MonoBehaviour
             }
             if (e.eventType == EventType.ItemAttached)
             {
-                print("item attaching");
+                //Debug.Log("item attaching");
                 GameObject[] playercards = GameObject.FindGameObjectsWithTag("PlayerCard");
                 GameObject playercard = null;
                 GameObject itemcard = null;
                 foreach (GameObject go in playercards)
                 {
-                    print("e.data[0]: " + e.data[0]);
+                    //Debug.Log("e.data[0]: " + e.data[0]);
                     var card = go.GetComponent<CardObject>();
                     if ((int)e.data[0] == card.GetUnitId())
                     {
@@ -112,7 +112,7 @@ public class GameManager : MonoBehaviour
                 hand = (List<Card>)e.data[0];
                 foreach (Card card in hand)
                 {
-                    Debug.Log(card.cardType);
+                    //Debug.Log(card.cardType);
                 }
             }
             //print(e);
@@ -129,27 +129,27 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        print("phaseChanged: " + PhaseChanged);
-        print("phase: " + phaseNum);
+        //Debug.Log("phaseChanged: " + PhaseChanged);
+        //Debug.Log("phase: " + phaseNum);
         updateTurnText();
         if (phaseNum == 0 && !PhaseChanged && !transitioning)
         {
             PhaseButton.text = "NEXT";
             StartCoroutine(PhaseTextChange("CARD PHASE"));
             //attackedThisTurn = false;
-            print("phaseNum: " + phaseNum);
+            //Debug.Log("phaseNum: " + phaseNum);
         }
         if (phaseNum == 1 && !PhaseChanged && !transitioning)
         {
             PhaseButton.text = "END";
             StartCoroutine(PhaseTextChange("ATTACK PHASE"));
-            print("phaseNum: " + phaseNum);
+            //Debug.Log("phaseNum: " + phaseNum);
         }
         if (phaseNum == 2 && !PhaseChanged && !transitioning)
         {
             PhaseButton.text = "NEXT";
             StartCoroutine(PhaseTextChange("ENEMY PHASE"));
-            print("phaseNum: " + phaseNum);
+            //Debug.Log("phaseNum: " + phaseNum);
         }
 
     }
@@ -166,7 +166,16 @@ public class GameManager : MonoBehaviour
             }
             if (e.eventType == EventType.HandGiven)
             {
+                Debug.Log("Does this enter?");
                 hand = (List<Card>)e.data[0];
+                foreach (Card card in Game.hand)
+                {
+                    Debug.Log("Given from event: " + card.unitType + " " + card.id);
+                }
+                foreach (Card card in Game.playerUnits)
+                {
+                    Debug.Log("In play: " + card.unitType + " " + card.id);
+                }
             }
         }
         if (phaseNum < 2)
@@ -185,7 +194,10 @@ public class GameManager : MonoBehaviour
         if (phaseNum == 0)
         {
             TakeHand();
-            //Debug.Log("We're so back.");
+            foreach (Card card in hand)
+            {
+                Debug.Log(card.unitType + " " + card.id);
+            }
             GenerateHand(hand);
         }
         PhaseChanged = !PhaseChanged;
@@ -308,7 +320,7 @@ public class GameManager : MonoBehaviour
             }
             if (e.eventType == EventType.UnitAbilityActivation)
             {
-                Debug.Log("Did anything even happen?");
+                //Debug.Log("Did anything even happen?");
                 int idToCheck = (int)e.data[0];
                 UnitType unitAbility = UnitType.NotApplicable;
                 string abilityName = null;
@@ -317,9 +329,9 @@ public class GameManager : MonoBehaviour
                     var card = go.GetComponent<CardObject>();
                     if (idToCheck == card.GetUnitId())
                     {
-                        Debug.Log("found!");
+                        //Debug.Log("found!");
                         unitAbility = card.GetUnitType();
-                        Debug.Log("found: " + unitAbility.ToString());
+                        //Debug.Log("found: " + unitAbility.ToString());
                         break;
                     }
                 }
@@ -334,12 +346,12 @@ public class GameManager : MonoBehaviour
                 }
                 if (unitAbility == UnitType.NotApplicable)
                 {
-                    Debug.Log("Something went wrong...");
+                    //Debug.Log("Something went wrong...");
                     continue;
                 }
                 else
                 {
-                    Debug.Log("Found ability!");
+                    //Debug.Log("Found ability!");
                     abilityName = ToAbility(CardDicts.unitAbilityDict[unitAbility]);
                 }
 
@@ -349,7 +361,7 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("Where's the text!");
+                    //Debug.Log("Where's the text!");
                     StartCoroutine(AbilityActivates(abilityName));
                 }
             }
@@ -401,16 +413,16 @@ public class GameManager : MonoBehaviour
             }
             if (e.eventType == EventType.EncounterEnded)
             {
-                print((bool)e.data[0]);
+                //Debug.Log((bool)e.data[0]);
                 if ((bool)e.data[0])
                 {
-                    print("won");
+                    //Debug.Log("won");
                     WinLoseText.text = "YOU WIN";
                     StartCoroutine(DisplayEndEncounter(true));
                 }
                 if (!((bool)e.data[0]))
                 {
-                    print("lose");
+                    //Debug.Log("lose");
                     WinLoseText.text = "YOU LOSE";
                     StartCoroutine(DisplayEndEncounter(false));
                 }
@@ -433,7 +445,7 @@ public class GameManager : MonoBehaviour
 
     public void attachItemToCard(GameObject card)
     {
-        print("should lerp");
+        //Debug.Log("should lerp");
         if (selectedItem.GetComponent<CardObject>().parentCard == null && card.GetComponent<CardObject>().item == null)
         {
             StartCoroutine(Lerp(selectedItem, new Vector3(card.transform.position.x, card.transform.position.y - 2f, card.transform.position.z + .05f), 1f));
@@ -446,7 +458,7 @@ public class GameManager : MonoBehaviour
 
     public void attachItemToCard(GameObject card, GameObject item)
     {
-        print("should lerp");
+        //Debug.Log("should lerp");
         if (item.GetComponent<CardObject>().parentCard == null && card.GetComponent<CardObject>().item == null)
         {
             StartCoroutine(Lerp(item, new Vector3(card.transform.position.x, card.transform.position.y - 2f, card.transform.position.z + .05f), 1f));
@@ -487,7 +499,7 @@ public class GameManager : MonoBehaviour
             {
                 defender = card;
                 defenderPos = card.transform.position;
-                print("card found 1");
+                //Debug.Log("card found 1");
                 break;
             }
         }
@@ -496,14 +508,14 @@ public class GameManager : MonoBehaviour
             if (card.GetComponent<CardObject>().GetUnitId() == attackerId)
             {
                 attacker = card;
-                print("card found 2");
+                //Debug.Log("card found 2");
                 break;
             }
         }
         if (attacker != null && defender != null)
         {
-            print("both found");
-            print(attacker.transform.position);
+            //Debug.Log("both found");
+            //Debug.Log(attacker.transform.position);
             attackerPos = attacker.transform.position;
             StartCoroutine(attackAnimation(attacker, attackerPos, defender));
         }
@@ -524,27 +536,27 @@ public class GameManager : MonoBehaviour
             {
                 defender = card;
                 defenderPos = card.transform.position;
-                print("card found 1");
+                //Debug.Log("card found 1");
                 break;
             }
         }
         foreach (GameObject card in playercards)
         {
-            print(card);
+            //Debug.Log(card);
             if (card != null)
             {
                 if (card.GetComponent<CardObject>().GetUnitId() == attackerId)
                 {
                     attacker = card;
-                    print("card found 2");
+                    //Debug.Log("card found 2");
                     break;
                 }
             }
         }
         if (attacker != null && defender != null)
         {
-            print("both found");
-            print(attacker.transform.position);
+            //Debug.Log("both found");
+            //Debug.Log(attacker.transform.position);
             attackerPos = attacker.transform.position;
             StartCoroutine(attackAnimation(attacker, attackerPos, defender));
         }
@@ -553,7 +565,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator attackAnimation(GameObject attacker, Vector3 attackerPos, GameObject defender)
     {
-        print("running animation");
+        //Debug.Log("running animation");
         StartCoroutine(Lerp(attacker, new Vector3(attackerPos.x, attackerPos.y, attackerPos.z - 1f), 1f));
         yield return new WaitForSeconds(1f);
         StartCoroutine(Lerp(attacker, new Vector3(defender.transform.position.x, defender.transform.position.y + 2f, defender.transform.position.z - .01f), .25f));
@@ -582,7 +594,7 @@ public class GameManager : MonoBehaviour
         events = Game.AttackUnit(attackerId, defenderId);
         foreach (GameEvent e in events)
         {
-            Debug.Log(e.eventType);
+            //Debug.Log(e.eventType);
             if (e.eventType == EventType.UnitStatChanged)
             {
                 int idToCheck = (int)e.data[0];
@@ -648,7 +660,7 @@ public class GameManager : MonoBehaviour
             }
             if (e.eventType == EventType.UnitAbilityActivation)
             {
-                Debug.Log("Did anything even happen?");
+                //Debug.Log("Did anything even happen?");
                 int idToCheck = (int)e.data[0];
                 UnitType unitAbility = UnitType.NotApplicable;
                 string abilityName = null;
@@ -676,7 +688,7 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("Found ability!");
+                    //Debug.Log("Found ability!");
                     abilityName = ToAbility(CardDicts.unitAbilityDict[unitAbility]);
                 }
                 if (abilityName == null)
@@ -685,21 +697,21 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("Where's the text!");
+                    //Debug.Log("Where's the text!");
                     StartCoroutine(AbilityActivates(abilityName));
                 }
             }
             if (e.eventType == EventType.EncounterEnded)
             {
-                print((bool)e.data[0]);
+                //Debug.Log((bool)e.data[0]);
                 if ((bool)e.data[0])
                 {
-                    print("won");
+                    //Debug.Log("won");
                     StartCoroutine(DisplayEndEncounter(true));
                 }
                 if (!((bool)e.data[0]))
                 {
-                    print("lose");
+                    //Debug.Log("lose");
                     WinLoseText.text = "YOU LOSE";
                     StartCoroutine(DisplayEndEncounter(false));
                 }
@@ -919,10 +931,10 @@ public class GameManager : MonoBehaviour
         {
             currentCard = Instantiate(cardPrefab, new Vector3(playerDeck.position.x, playerDeck.position.y, playerDeck.position.z), Quaternion.Euler(0, 0, 0));
             currentCard.tag = "PlayerCard";
-            Debug.Log(c.id);
+            //Debug.Log(c.id);
             currentCard.GetComponent<CardObject>().SetUnitId(c.id);
             currentCard.GetComponent<CardObject>().SetInHand(true);
-            Debug.Log("In Generate Hand: " + c.unitType + "," + c.itemType);
+            Debug.Log("In Generate Hand: " + c.unitType + ", " + c.itemType + ", " + c.id.ToString());
             currentCard.GetComponent<CardObject>().SetType(c.unitType, c.itemType);
             StartCoroutine(Lerp(currentCard, new Vector3(handslots[handslotid].transform.position.x, handslots[handslotid].transform.position.y, handslots[handslotid].transform.position.z - .01f), 1f));
             handslotid += 1;
@@ -963,7 +975,7 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator Lerp(GameObject obj, Vector3 end, float duration)
     {
-        print("lerping" + obj + " " + end);
+        //Debug.Log("lerping" + obj + " " + end);
         float time = 0;
         Vector3 start = obj.transform.position;
         while (time < duration)

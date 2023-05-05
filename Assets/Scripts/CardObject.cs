@@ -25,7 +25,7 @@ public class CardObject : MonoBehaviour
     Touch touch;
     bool isPlayed = false;
 
-    bool itemSelected = false;
+    //bool itemSelected = false;
     int slotid = -1;
 
     int permaSlotId = -1;
@@ -142,7 +142,7 @@ public class CardObject : MonoBehaviour
                     }
                     if (!isOfUnit && (_gm.IsTouched(touchPos, _coll)))
                     {
-                        print("touching Item");
+                        //Debug.Log("touching Item");
                         //transform.position = playerCardLoc;
                         isSelected = false;
                         isPlayed = true;
@@ -169,8 +169,8 @@ public class CardObject : MonoBehaviour
                         enemyCardId = _gm.IsTouchingEnemyCard(touchPos);
                         if (enemyCardId >= 0)
                         {
-                            Debug.Log(unitId);
-                            Debug.Log(enemyCardId);
+                            //Debug.Log(unitId);
+                            //Debug.Log(enemyCardId);
                             _gm.PlayerAttackEvent(unitId, enemyCardId);
                             Color defaultColor = new Color(1f, 1f, 1f, 1f);
                             highlight(defaultColor);
@@ -185,7 +185,7 @@ public class CardObject : MonoBehaviour
 
                     else if (isOfUnit && isTouching && (_gm.IsTouched(touchPos, _coll)) && !attacking && !isSelected)
                     {
-                        print("selecting player");
+                        //Debug.Log("selecting player");
                         Color yellowHighlight = new Color(1f,1f,0f,1f);
                         highlight(yellowHighlight);
                         isSelected = true;
@@ -225,8 +225,8 @@ public class CardObject : MonoBehaviour
     {
         _mr = GetComponent<Renderer>();
         Material mat;
-        Debug.Log(newtypeU);
-        Debug.Log(newtypeI);
+        //Debug.Log(newtypeU);
+        //Debug.Log(newtypeI);
         if(newtypeI == ItemType.NotApplicable)
         {
             _health.text = CardDicts.unitHealthDict[newtypeU].ToString();
@@ -332,7 +332,7 @@ public class CardObject : MonoBehaviour
     {
         Vector3 currPos = new Vector3(_deltaHP.transform.position.x, _deltaHP.transform.position.y, _deltaHP.transform.position.z);
         Vector3 finalPos = new Vector3(_deltaHP.transform.position.x, _deltaHP.transform.position.y + 0.2f, _deltaHP.transform.position.z);
-        Debug.Log("Is this thing on?");
+        //Debug.Log("Is this thing on?");
         if(deltaHealth > 0)
         {
             _deltaHP.text = deltaHealth.ToString();

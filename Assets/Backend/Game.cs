@@ -6,8 +6,8 @@ using System.Linq;
 public static partial class Game
 {
     private static List<Card> deck = new List<Card>();
-    private static List<Card> hand = new List<Card>();
-    private static List<Card> playerUnits = new List<Card>();
+    public static List<Card> hand = new List<Card>();
+    public static List<Card> playerUnits = new List<Card>();
     private static List<Card> enemyUnits = new List<Card>();
     private static Phase phase = Phase.PlayerCards;
     private static int turn = 1;
@@ -189,6 +189,7 @@ public static partial class Game
             // move hand back to deck
             foreach (Card card in hand)
             {
+                //print what the card id is and unittype
                 deck.Add(card);
             }
             hand.Clear();
