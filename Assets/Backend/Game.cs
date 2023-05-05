@@ -157,14 +157,16 @@ public static partial class Game
 
         hand.Remove(item);
         Card returnedItem = null;
+        int retId = -1;
         if (unit.heldItem != null && unit.heldItemTurn == turn)
         {
             returnedItem = unit.heldItem;
+            retId = returnedItem.id;
             hand.Add(unit.heldItem);
         }
         unit.heldItem = item;
         unit.heldItemTurn = turn;
-        events.Add(new GameEvent { eventType = EventType.ItemAttached, data = new List<object> { unit.id, item.id, returnedItem.id } });
+        events.Add(new GameEvent { eventType = EventType.ItemAttached, data = new List<object> { unit.id, item.id, retId } });
 
         return events;
     }
