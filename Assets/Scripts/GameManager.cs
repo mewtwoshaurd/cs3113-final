@@ -249,6 +249,7 @@ public class GameManager : MonoBehaviour
                     if (idToCheck == card.GetUnitId())
                     {
                         card.UpdateStats((int)(e.data[3]), (int)(e.data[4]));
+                        StartCoroutine(card.changeHealth((int)(e.data[1])));
                         break;
                     }
                 }
@@ -260,6 +261,7 @@ public class GameManager : MonoBehaviour
                     if (idToCheck == card.GetUnitId())
                     {
                         card.UpdateStats((int)(e.data[3]), (int)(e.data[4]));
+                        StartCoroutine(card.changeHealth((int)(e.data[1])));
                         break;
                     }
                 }
@@ -588,6 +590,7 @@ public class GameManager : MonoBehaviour
                         //Debug.Log("Attack before: " + e.data[4]);
                         //Debug.Log("Attack delta: " + e.data[2]);
                         card.UpdateStats((int)(e.data[3]), (int)(e.data[4]));
+                        StartCoroutine(card.changeHealth((int)(e.data[1])));
                         break;
                     }
                 }
