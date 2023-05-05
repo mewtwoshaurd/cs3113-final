@@ -361,7 +361,7 @@ public static partial class Game
         {
             events.Add(new GameEvent { eventType = EventType.UnitAbilityActivation, data = new List<object> { defender.id } });
             attacker.health--;
-            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { attacker.id, -1, 0, defender.health, defender.damage } });
+            events.Add(new GameEvent { eventType = EventType.UnitStatChanged, data = new List<object> { attacker.id, -1, 0, attacker.health, attacker.damage } });
             if (attacker.health <= 0)
             {
                 HandleDeath(events, attacker);
