@@ -30,6 +30,18 @@ public static partial class Game
         return playerUnits.Count == 0 && numUnitCardsInHand == 0;
     }
 
+    static void RemoveFromList(List<Card> list, int id)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (list[i].id == id)
+            {
+                list.RemoveAt(i);
+                return;
+            }
+        }
+    }
+
     public static partial List<GameEvent> StartEncounter(List<Card> deck, UnitType encounterType)
     {
         List<GameEvent> events = new List<GameEvent>();
@@ -72,14 +84,14 @@ public static partial class Game
             if (unitCards.Count - 1 < i)
                 break;
             hand.Add(unitCards[i]);
-            deck.Remove(unitCards[i]);
+            RemoveFromList(deck, unitCards[i].id);
         }
         for (int i = 0; i < 3; i++)
         {
             if (itemCards.Count - 1 < i)
                 break;
             hand.Add(itemCards[i]);
-            deck.Remove(itemCards[i]);
+            RemoveFromList(deck, itemCards[i].id);
         }
 
         events.Add(new GameEvent { eventType = EventType.HandGiven, data = new List<object> { CardListCopy(Game.hand) } });
@@ -114,7 +126,7 @@ public static partial class Game
             return events;
         }
 
-        hand.Remove(unit);
+        RemoveFromList(hand, unit.id);
         playerUnits.Add(unit);
         events.Add(new GameEvent { eventType = EventType.UnitPlayed, data = new List<object> { unit.id } });
 
@@ -155,7 +167,7 @@ public static partial class Game
             return events;
         }
 
-        hand.Remove(item);
+        RemoveFromList(hand, item.id);
         Card returnedItem = null;
         int retId = -1;
         if (unit.heldItem != null && unit.heldItemTurn == turn)
@@ -269,18 +281,18 @@ public static partial class Game
             if (unitCards.Count > 0)
             {
                 hand.Add(unitCards[0]);
-                deck.Remove(unitCards[0]);
+                RemoveFromList(deck, unitCards[0].id);
             }
             // get 2 item cards
             if (itemCards.Count > 0)
             {
                 hand.Add(itemCards[0]);
-                deck.Remove(itemCards[0]);
+                RemoveFromList(deck, itemCards[0].id);
             }
             if (itemCards.Count > 1)
             {
                 hand.Add(itemCards[1]);
-                deck.Remove(itemCards[1]);
+                RemoveFromList(deck, itemCards[1].id);
             }
 
             events.Add(new GameEvent { eventType = EventType.HandGiven, data = new List<object> { CardListCopy(hand) } });
@@ -449,11 +461,11 @@ public static partial class Game
             // Remove unit from field
             if (phase == Phase.PlayerUnits)
             {
-                enemyUnits.Remove(unit);
+                RemoveFromList(enemyUnits, unit.id);
             }
             else
             {
-                playerUnits.Remove(unit);
+                RemoveFromList(playerUnits, unit.id);
             }
             // Send death event
             events.Add(new GameEvent { eventType = EventType.UnitDied, data = new List<object> { unit.id } });
