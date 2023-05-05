@@ -1558,7 +1558,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0419310ed7407ca40aae685532e82cce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  encounterSceneName: SampleScene
+  encounterSceneName: EncounterScene
   cttu: {fileID: 1765839046}
   card: {fileID: 1738166659}
 --- !u!1 &2073593126
