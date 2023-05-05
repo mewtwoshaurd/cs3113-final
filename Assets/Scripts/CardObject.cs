@@ -42,9 +42,21 @@ public class CardObject : MonoBehaviour
     public int health;
     public TMPro.TextMeshProUGUI _health;
     public TMPro.TextMeshProUGUI _attack;
+
+    public TMPro.TextMeshProUGUI _deltaHP;
+
+    public TMPro.TextMeshProUGUI _deltaHM;
+
+    public TMPro.TextMeshProUGUI _deltaAP;
+
+    public TMPro.TextMeshProUGUI _deltaAM;
     List<GameEvent> events = new List<GameEvent>();
     public TMPro.TextMeshProUGUI _name;
     public TMPro.TextMeshProUGUI _ability;
+
+    public TMP_FontAsset positive;
+
+    public TMP_FontAsset negative;
 
     public static bool attacking = false;
 
@@ -60,6 +72,10 @@ public class CardObject : MonoBehaviour
         _coll = GetComponent<BoxCollider>();
         _gm = (GameManager)FindObjectOfType<GameManager>();
         soundEmitter = GameObject.FindGameObjectWithTag("SoundEmitter").GetComponent<SoundEmitter>();
+        _deltaHP.text = "";
+        _deltaHM.text = "";
+        _deltaAP.text = "";
+        _deltaAM.text = "";
     }
 
     // Update is called once per frame
@@ -307,5 +323,26 @@ public class CardObject : MonoBehaviour
     public bool IsPlayed()
     {
         return isPlayed;
+    }
+    
+    public IEnumerator changeHealth(int deltaHealth)
+    {
+        Vector3 currPos = new Vector3(_deltaHP.transform.position.x, _deltaHP.transform.position.y, _deltaHP.transform.position.z);
+        Vector3 finalPos = new Vector3(_deltaHP.transform.position.x, _deltaHP.transform.position.y + 0.2f, _deltaHP.transform.position.z);
+        Debug.Log("Is this thing on?");
+        if(deltaHealth > 0)
+        {
+            _deltaHP.text = deltaHealth.ToString();
+            yield return StartCoroutine(_gm.Lerp(_deltaHP.gameObject, finalPos, 2.0f));
+            _deltaHP.text = "";
+            _deltaHP.transform.position = currPos;
+        }
+        else
+        {
+            _deltaHM.text = deltaHealth.ToString();
+            yield return StartCoroutine(_gm.Lerp(_deltaHM.gameObject, finalPos, 2.0f));
+            _deltaHM.text = "";
+            _deltaHM.transform.position = currPos;
+        }
     }
 }
