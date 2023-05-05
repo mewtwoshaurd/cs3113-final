@@ -96,6 +96,24 @@ public class GameManager : MonoBehaviour
                 }
                 //Debug.Log(enemies);
             }
+            if(e.eventType == EventType.ItemAttached){
+                print("item attaching");
+                GameObject[] playercards = GameObject.FindGameObjectsWithTag("PlayerCard");
+                GameObject playercard = null;
+                GameObject itemcard= null;
+                foreach (GameObject go in playercards)
+                {
+                    print("e.data[0]: " + e.data[0]);
+                    var card = go.GetComponent<CardObject>();
+                    if ((int)e.data[0] == card.GetUnitId()){
+                        playercard = go;
+                    }
+                    if ((int)e.data[1] == card.GetUnitId()){
+                         itemcard = go;
+                    }
+                }
+                attachItemToCard(playercard,itemcard);
+            }
             if (e.eventType == EventType.HandGiven)
             {
                 hand = (List<Card>)e.data[0];
@@ -364,6 +382,17 @@ public class GameManager : MonoBehaviour
             StartCoroutine(Lerp(selectedItem,new Vector3(card.transform.position.x,card.transform.position.y-2f,card.transform.position.z-.02f),1f));
             Game.AttachItem(card.GetComponent<CardObject>().GetUnitId(), selectedItem.GetComponent<CardObject>().GetUnitId());
             selectedItem.GetComponent<CardObject>().parentCard = card;
+            card.GetComponent<CardObject>().item = selectedItem;
+        }
+        
+    }
+
+    public void attachItemToCard(GameObject card, GameObject item){
+        print("should lerp");
+        if(item.GetComponent<CardObject>().parentCard==null &&card.GetComponent<CardObject>().item==null){
+            StartCoroutine(Lerp(item,new Vector3(card.transform.position.x,card.transform.position.y-2f,card.transform.position.z-.02f),1f));
+            Game.AttachItem(card.GetComponent<CardObject>().GetUnitId(), item.GetComponent<CardObject>().GetUnitId());
+            item.GetComponent<CardObject>().parentCard = card;
             card.GetComponent<CardObject>().item = selectedItem;
         }
         
