@@ -55,13 +55,13 @@ public class GameManager : MonoBehaviour
 
     public bool attackedThisTurn = false;
 
-    UnitType[] currImplementedUnits = new UnitType[] { UnitType.Dog, UnitType.Gorilla, UnitType.Bat, UnitType.Monkey, UnitType.Lion};
+    UnitType[] currImplementedUnits = new UnitType[] { UnitType.Dog, UnitType.Gorilla, UnitType.Bat, UnitType.Monkey, UnitType.Lion };
     //ItemType[] currImplementedItems = new ItemType[] { ItemType.SmokeBomb, ItemType.Apple};
 
     public SoundEmitter soundEmitter;
 
     void Start()
-    {   
+    {
         AbilityActivated.text = "";
         ItemActivated.text = "";
         for (int i = 0; i < 5; i++)
@@ -86,23 +86,26 @@ public class GameManager : MonoBehaviour
                 }
                 //Debug.Log(enemies);
             }
-            if(e.eventType == EventType.ItemAttached){
+            if (e.eventType == EventType.ItemAttached)
+            {
                 print("item attaching");
                 GameObject[] playercards = GameObject.FindGameObjectsWithTag("PlayerCard");
                 GameObject playercard = null;
-                GameObject itemcard= null;
+                GameObject itemcard = null;
                 foreach (GameObject go in playercards)
                 {
                     print("e.data[0]: " + e.data[0]);
                     var card = go.GetComponent<CardObject>();
-                    if ((int)e.data[0] == card.GetUnitId()){
+                    if ((int)e.data[0] == card.GetUnitId())
+                    {
                         playercard = go;
                     }
-                    if ((int)e.data[1] == card.GetUnitId()){
-                         itemcard = go;
+                    if ((int)e.data[1] == card.GetUnitId())
+                    {
+                        itemcard = go;
                     }
                 }
-                attachItemToCard(playercard,itemcard);
+                attachItemToCard(playercard, itemcard);
             }
             if (e.eventType == EventType.HandGiven)
             {
@@ -175,9 +178,9 @@ public class GameManager : MonoBehaviour
             //Debug.Log("Is this thing on?");
             turnNum++;
             EnemyAttack(events);
-            PhaseChanged=true;
-            PhaseChanged=true;
-            phaseNum=0;
+            PhaseChanged = true;
+            PhaseChanged = true;
+            phaseNum = 0;
         }
         if (phaseNum == 0)
         {
@@ -281,7 +284,7 @@ public class GameManager : MonoBehaviour
                         int handSlotToRemove = card.GetUnitSlot();
                         //Debug.Log("Play slot please... " + handSlotToRemove.ToString());
                         UpdateGameSlot(handSlotToRemove, false);
-                        if(card.item != null)
+                        if (card.item != null)
                         {
                             Destroy(card.item, animationTime);
                         }
@@ -294,7 +297,7 @@ public class GameManager : MonoBehaviour
                     var card = go.GetComponent<CardObject>();
                     if (idToCheck == card.GetUnitId())
                     {
-                        if(card.item != null)
+                        if (card.item != null)
                         {
                             Destroy(card.item, animationTime);
                         }
@@ -325,11 +328,11 @@ public class GameManager : MonoBehaviour
                     var card = go.GetComponent<CardObject>();
                     if (idToCheck == card.GetUnitId())
                     {
-                       unitAbility = card.GetUnitType();
-                       break;
+                        unitAbility = card.GetUnitType();
+                        break;
                     }
                 }
-                if(unitAbility == UnitType.NotApplicable)
+                if (unitAbility == UnitType.NotApplicable)
                 {
                     Debug.Log("Something went wrong...");
                     continue;
@@ -339,8 +342,8 @@ public class GameManager : MonoBehaviour
                     Debug.Log("Found ability!");
                     abilityName = ToAbility(CardDicts.unitAbilityDict[unitAbility]);
                 }
-                
-                if(abilityName == null)
+
+                if (abilityName == null)
                 {
                     continue;
                 }
@@ -372,14 +375,14 @@ public class GameManager : MonoBehaviour
                     var card = go.GetComponent<CardObject>();
                     if (idToCheck == card.GetUnitId())
                     {
-                       itemAbility = card.GetItemType();
-                       card.parentCard.GetComponent<CardObject>().item = null;
+                        itemAbility = card.GetItemType();
+                        card.parentCard.GetComponent<CardObject>().item = null;
                         card.parentCard = null;
-                       Destroy(go);
-                       break;
+                        Destroy(go);
+                        break;
                     }
                 }
-                if(itemAbility == ItemType.NotApplicable)
+                if (itemAbility == ItemType.NotApplicable)
                 {
                     continue;
                 }
@@ -387,7 +390,7 @@ public class GameManager : MonoBehaviour
                 {
                     itemName = ToItem(itemAbility);
                 }
-                if(itemName == null)
+                if (itemName == null)
                 {
                     continue;
                 }
@@ -399,12 +402,14 @@ public class GameManager : MonoBehaviour
             if (e.eventType == EventType.EncounterEnded)
             {
                 print((bool)e.data[0]);
-                if((bool)e.data[0]){
+                if ((bool)e.data[0])
+                {
                     print("won");
                     WinLoseText.text = "YOU WIN";
                     StartCoroutine(DisplayEndEncounter(true));
                 }
-                if(!((bool)e.data[0])){
+                if (!((bool)e.data[0]))
+                {
                     print("lose");
                     WinLoseText.text = "YOU LOSE";
                     StartCoroutine(DisplayEndEncounter(false));
@@ -426,38 +431,45 @@ public class GameManager : MonoBehaviour
         //IncrementPhase();
     }
 
-    public void attachItemToCard(GameObject card){
+    public void attachItemToCard(GameObject card)
+    {
         print("should lerp");
-        if(selectedItem.GetComponent<CardObject>().parentCard==null &&card.GetComponent<CardObject>().item==null){
-            StartCoroutine(Lerp(selectedItem,new Vector3(card.transform.position.x,card.transform.position.y-2f,card.transform.position.z+.05f),1f));
+        if (selectedItem.GetComponent<CardObject>().parentCard == null && card.GetComponent<CardObject>().item == null)
+        {
+            StartCoroutine(Lerp(selectedItem, new Vector3(card.transform.position.x, card.transform.position.y - 2f, card.transform.position.z + .05f), 1f));
             Game.AttachItem(card.GetComponent<CardObject>().GetUnitId(), selectedItem.GetComponent<CardObject>().GetUnitId());
             selectedItem.GetComponent<CardObject>().parentCard = card;
             card.GetComponent<CardObject>().item = selectedItem;
         }
-        
+
     }
 
-    public void attachItemToCard(GameObject card, GameObject item){
+    public void attachItemToCard(GameObject card, GameObject item)
+    {
         print("should lerp");
-        if(item.GetComponent<CardObject>().parentCard==null &&card.GetComponent<CardObject>().item==null){
-            StartCoroutine(Lerp(item,new Vector3(card.transform.position.x,card.transform.position.y-2f,card.transform.position.z+.05f),1f));
+        if (item.GetComponent<CardObject>().parentCard == null && card.GetComponent<CardObject>().item == null)
+        {
+            StartCoroutine(Lerp(item, new Vector3(card.transform.position.x, card.transform.position.y - 2f, card.transform.position.z + .05f), 1f));
             Game.AttachItem(card.GetComponent<CardObject>().GetUnitId(), item.GetComponent<CardObject>().GetUnitId());
             item.GetComponent<CardObject>().parentCard = card;
             card.GetComponent<CardObject>().item = selectedItem;
         }
     }
-    IEnumerator DisplayEndEncounter(bool won){
-        if(won){
-            WinLoseText.color = new Color(0f,1f,0f,1f);
+    IEnumerator DisplayEndEncounter(bool won)
+    {
+        if (won)
+        {
+            WinLoseText.color = new Color(0f, 1f, 0f, 1f);
             WinLoseText.text = "YOU WON";
             yield return new WaitForSeconds(2f);
-            SceneManager.LoadScene(2);    
+            SceneManager.LoadScene("RewardScene");
         }
-        else{
-            WinLoseText.color = new Color(1f,0f,0f,1f);
+        else
+        {
+            WinLoseText.color = new Color(1f, 0f, 0f, 1f);
             WinLoseText.text = "YOU LOSE";
             yield return new WaitForSeconds(2f);
-            SceneManager.LoadScene(1);
+            SceneManager.LoadScene("MainMenu");
         }
     }
 
@@ -610,7 +622,7 @@ public class GameManager : MonoBehaviour
                     if (idToCheck == card.GetUnitId())
                     {
                         int handSlotToRemove = card.GetUnitSlot();
-                        if(card.item != null)
+                        if (card.item != null)
                         {
                             Destroy(card.item, animationTime);
                         }
@@ -625,7 +637,7 @@ public class GameManager : MonoBehaviour
                     var card = go.GetComponent<CardObject>();
                     if (idToCheck == card.GetUnitId())
                     {
-                        if(card.item != null)
+                        if (card.item != null)
                         {
                             Destroy(card.item, animationTime);
                         }
@@ -654,11 +666,11 @@ public class GameManager : MonoBehaviour
                     var card = go.GetComponent<CardObject>();
                     if (idToCheck == card.GetUnitId())
                     {
-                       unitAbility = card.GetUnitType();
-                       break;
+                        unitAbility = card.GetUnitType();
+                        break;
                     }
                 }
-                if(unitAbility == UnitType.NotApplicable)
+                if (unitAbility == UnitType.NotApplicable)
                 {
                     continue;
                 }
@@ -667,7 +679,7 @@ public class GameManager : MonoBehaviour
                     Debug.Log("Found ability!");
                     abilityName = ToAbility(CardDicts.unitAbilityDict[unitAbility]);
                 }
-                if(abilityName == null)
+                if (abilityName == null)
                 {
                     continue;
                 }
@@ -680,11 +692,13 @@ public class GameManager : MonoBehaviour
             if (e.eventType == EventType.EncounterEnded)
             {
                 print((bool)e.data[0]);
-                if((bool)e.data[0]){
+                if ((bool)e.data[0])
+                {
                     print("won");
                     StartCoroutine(DisplayEndEncounter(true));
                 }
-                if(!((bool)e.data[0])){
+                if (!((bool)e.data[0]))
+                {
                     print("lose");
                     WinLoseText.text = "YOU LOSE";
                     //SceneManager.LoadScene(1);
@@ -714,14 +728,14 @@ public class GameManager : MonoBehaviour
                     var card = go.GetComponent<CardObject>();
                     if (idToCheck == card.GetUnitId())
                     {
-                       itemAbility = card.GetItemType();
-                       card.parentCard.GetComponent<CardObject>().item = null;
+                        itemAbility = card.GetItemType();
+                        card.parentCard.GetComponent<CardObject>().item = null;
                         card.parentCard = null;
-                       Destroy(go);
-                       break;
+                        Destroy(go);
+                        break;
                     }
                 }
-                if(itemAbility == ItemType.NotApplicable)
+                if (itemAbility == ItemType.NotApplicable)
                 {
                     continue;
                 }
@@ -729,7 +743,7 @@ public class GameManager : MonoBehaviour
                 {
                     itemName = ToItem(itemAbility);
                 }
-                if(itemName == null)
+                if (itemName == null)
                 {
                     continue;
                 }
@@ -885,7 +899,7 @@ public class GameManager : MonoBehaviour
             currentCard.GetComponent<CardObject>().SetType(enemy.unitType, enemy.itemType);
             enemyCardObjs[enemySlotId] = currentCard;
             StartCoroutine(Lerp(currentCard, new Vector3(enemyslots[enemySlotId].transform.position.x, enemyslots[enemySlotId].transform.position.y, enemyslots[enemySlotId].transform.position.z - .1f), 1f));
-            if(enemy.heldItem != null)
+            if (enemy.heldItem != null)
             {
                 itemCard = Instantiate(enemyPrefab, new Vector3(enemyslots[enemySlotId].transform.position.x, enemyslots[enemySlotId].transform.position.y, enemyslots[enemySlotId].transform.position.z), Quaternion.Euler(0, 0, 0));
                 itemCard.GetComponent<CardObject>().SetUnitId(enemy.heldItem.id);
@@ -988,35 +1002,35 @@ public class GameManager : MonoBehaviour
 
     public string ToAbility(AbilityType abilityT)
     {
-        if(abilityT == AbilityType.None)
+        if (abilityT == AbilityType.None)
         {
             return "None";
         }
-        else if(abilityT == AbilityType.Bloodsucker)
+        else if (abilityT == AbilityType.Bloodsucker)
         {
             return "Bloodsucker";
         }
-        else if(abilityT == AbilityType.Lazy)
+        else if (abilityT == AbilityType.Lazy)
         {
             return "Lazy";
         }
-        else if(abilityT == AbilityType.Swarm)
+        else if (abilityT == AbilityType.Swarm)
         {
             return "Swarm";
         }
-        else if(abilityT == AbilityType.Spikey)
+        else if (abilityT == AbilityType.Spikey)
         {
             return "Spikey";
         }
-        else if(abilityT == AbilityType.Wild)
+        else if (abilityT == AbilityType.Wild)
         {
             return "Wild";
         }
-        else if(abilityT == AbilityType.Curse)
+        else if (abilityT == AbilityType.Curse)
         {
             return "Curse";
         }
-        else if(abilityT == AbilityType.Intimidate)
+        else if (abilityT == AbilityType.Intimidate)
         {
             return "Intimidate";
         }
@@ -1028,23 +1042,23 @@ public class GameManager : MonoBehaviour
 
     public string ToItem(ItemType itemT)
     {
-        if(itemT == ItemType.Apple)
+        if (itemT == ItemType.Apple)
         {
             return "Apple";
         }
-        else if(itemT == ItemType.SmokeBomb)
+        else if (itemT == ItemType.SmokeBomb)
         {
             return "SmokeBomb";
         }
-        else if(itemT == ItemType.Coffee)
+        else if (itemT == ItemType.Coffee)
         {
             return "Coffee";
         }
-        else if(itemT == ItemType.Dagger)
+        else if (itemT == ItemType.Dagger)
         {
             return "Dagger";
         }
-        else if(itemT == ItemType.Star)
+        else if (itemT == ItemType.Star)
         {
             return "Star";
         }
