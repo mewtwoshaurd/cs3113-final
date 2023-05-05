@@ -71,7 +71,7 @@ public class GameManager : MonoBehaviour
         UnitType randtypeU;
         int randu = UnityEngine.Random.Range(0, 4);
         randtypeU = currImplementedUnits[randu];
-        //Debug.Log(randtypeU);
+        Debug.Log(randtypeU);
         deck = DeckManager.playerDeck;
         events = Game.StartEncounter(deck, randtypeU);
         foreach (GameEvent e in events)
