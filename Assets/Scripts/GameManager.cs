@@ -55,8 +55,8 @@ public class GameManager : MonoBehaviour
 
     public bool attackedThisTurn = false;
 
-    public UnitType[] currImplementedUnits = new UnitType[] { UnitType.Dog, UnitType.Bee, UnitType.Bat, UnitType.Spider };
-    public ItemType[] currImplementedItems = new ItemType[] { ItemType.SmokeBomb, ItemType.Apple};
+    UnitType[] currImplementedUnits = new UnitType[] { UnitType.Dog, UnitType.Gorilla, UnitType.Bat, UnitType.Monkey, UnitType.Lion};
+    //ItemType[] currImplementedItems = new ItemType[] { ItemType.SmokeBomb, ItemType.Apple};
 
     public SoundEmitter soundEmitter;
 
@@ -69,21 +69,11 @@ public class GameManager : MonoBehaviour
             playableSlots[i] = 0;
         }
         UnitType randtypeU;
-        for (int i = 0; i < 10; i++)
-        {
-            int randu = UnityEngine.Random.Range(0, 4);
-            randtypeU = currImplementedUnits[randu];
-            deck.Add(Card.UnitCard(randtypeU));
-        }
-        //ItemType randtypeI;
-        for (int i = 0; i < 10; i++)
-        {
-            /*int randi = UnityEngine.Random.Range(0, 1);
-            Debug.Log(randi);
-            randtypeI = currImplementedItems[randi];*/
-            deck.Add(Card.ItemCard(ItemType.Apple));
-        }
-        events = Game.StartEncounter(deck, UnitType.Dog);
+        int randu = UnityEngine.Random.Range(0, 4);
+        randtypeU = currImplementedUnits[randu];
+        Debug.Log(randtypeU);
+        deck = DeckManager.playerDeck;
+        events = Game.StartEncounter(deck, randtypeU);
         foreach (GameEvent e in events)
         {
             if (e.eventType == EventType.EncounterStarted)
