@@ -701,7 +701,6 @@ public class GameManager : MonoBehaviour
                 {
                     print("lose");
                     WinLoseText.text = "YOU LOSE";
-                    //SceneManager.LoadScene(1);
                     StartCoroutine(DisplayEndEncounter(false));
                 }
                 //StartCoroutine(DisplayEndOfEncounter((bool)e.data[0]));

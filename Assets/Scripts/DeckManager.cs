@@ -3,5 +3,5 @@ using System.Collections.Generic;
 
 public static class DeckManager
 {
-    public static List<Card> playerDeck;
+    public static List<Card> playerDeck = new List<Card>();
 }
